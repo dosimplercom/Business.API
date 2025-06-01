@@ -35,6 +35,7 @@ export class AppModule {
     console.log('AppModule initialized');
     console.log('Cookie Key:', this.configService);
     console.log('Cookie Key:', this.configService.get('COOKIE_KEY'));
+    console.log('Database URL:', this.configService.get('PORT'));
    }
 
   configure(consumer: MiddlewareConsumer) {
