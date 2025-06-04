@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
+import { AppDataSource } from 'typeorm.config';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -15,7 +16,9 @@ const cookieSession = require('cookie-session');
       envFilePath: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env',
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
-    TypeOrmModule.forRoot(),
+    TypeOrmModule.forRoot({ 
+        ...AppDataSource.options,
+    }),
     UsersModule,
     ReportsModule,
   ],
@@ -33,9 +36,10 @@ const cookieSession = require('cookie-session');
 export class AppModule {
   constructor(private configService: ConfigService) {
     console.log('AppModule initialized');
-    console.log('Cookie Key:', this.configService);
-    console.log('Cookie Key:', this.configService.get('COOKIE_KEY'));
-    console.log('Database URL:', this.configService.get('PORT'));
+    // console.log('Config Service:', this.configService);
+    // console.log('Cookie Key:', this.configService.get('COOKIE_KEY'));
+    // console.log('Database URL:', this.configService.get('DB_PORT'));
+    console.log('PORT:', this.configService.get('PORT'));
    }
 
   configure(consumer: MiddlewareConsumer) {
