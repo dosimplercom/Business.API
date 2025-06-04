@@ -33,6 +33,7 @@ switch (process.env.NODE_ENV) {
       entities: ['dist/**/*.entity.js'], // compiled JS files in production
       ssl: {
         rejectUnauthorized: false, // required by Azure Postgres
+        ca: process.env.PG_CA ? Buffer.from(process.env.PG_CA, 'base64').toString('ascii') : undefined
       },
       migrationsRun: true,
     });
