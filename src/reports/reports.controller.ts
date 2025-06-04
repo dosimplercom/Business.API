@@ -21,7 +21,7 @@ import { GetEstimateDto } from './dtos/get-estimate.dto';
 
 @Controller('reports')
 export class ReportsController {
-  constructor(private reportsService: ReportsService) {}
+  constructor(private reportsService: ReportsService) { }
 
   @Get()
   getEstimate(@Query() query: GetEstimateDto) {
@@ -38,6 +38,6 @@ export class ReportsController {
   @Patch('/:id')
   @UseGuards(AdminGuard)
   approveReport(@Param('id') id: string, @Body() body: ApproveReportDto) {
-    return this.reportsService.changeApproval(id, body.approved);
+    return this.reportsService.changeApproval(parseInt(id), body.approved);
   }
 }
