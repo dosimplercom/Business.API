@@ -37,8 +37,8 @@ export class AppModule {
   constructor(private configService: ConfigService) {
     console.log('AppModule initialized');
     // console.log('Config Service:', this.configService);
-    // console.log('Cookie Key:', this.configService.get('COOKIE_KEY'));
-    // console.log('Database URL:', this.configService.get('DB_PORT'));
+    // console.log('Cookie Key:',process.env.COOKIE_KEY);
+    // console.log('ENV', process.env.NODE_ENV);
     console.log('PORT:', this.configService.get('PORT'));
    }
 
@@ -46,7 +46,7 @@ export class AppModule {
     consumer
       .apply(
         cookieSession({
-          keys: [this.configService.get('COOKIE_KEY')],
+          keys: [process.env.COOKIE_KEY],//[this.configService.get('COOKIE_KEY')],
         }),
       )
       .forRoutes('*');
