@@ -11,7 +11,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/src/main",
     
-    "start:dev": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register src/main.ts",
+    "start:dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/main.ts",
 
     "start:debug": "cross-env NODE_ENV=development nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -23,7 +23,6 @@
     "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --maxWorkers=1",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "postinstall": "npm run build",
-
     "migration:generate": "cross-env NODE_ENV=development ts-node ./node_modules/typeorm/cli.js migration:generate migrations/InitPostgresSchema -d typeorm.config.ts",
     "migration:run": "npx typeorm-ts-node-commonjs migration:run -d typeorm.config.ts"
   },
@@ -64,6 +63,7 @@
     "ts-jest": "^29.3.4",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^5.8.3"
   },

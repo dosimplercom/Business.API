@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:3000
+
+### Days
+
+GET {{baseUrl}}/sys/days
+
+### Industries
+GET {{baseUrl}}/sys/industries
+
+### Timezones
+GET {{baseUrl}}/sys/timezones

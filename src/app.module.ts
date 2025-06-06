@@ -1,3 +1,4 @@
+import { SysDataModule } from './controllers/sys-data/sys-data.module';
 import { Module, ValidationPipe, MiddlewareConsumer } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,14 +14,17 @@ const cookieSession = require('cookie-session');
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env',
+      envFilePath: process.env.NODE_ENV
+        ? `.env.${process.env.NODE_ENV}`
+        : '.env',
       ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
-    TypeOrmModule.forRoot({ 
-        ...AppDataSource.options,
+    TypeOrmModule.forRoot({
+      ...AppDataSource.options,
     }),
     UsersModule,
     ReportsModule,
+    SysDataModule,
   ],
   controllers: [AppController],
   providers: [
@@ -40,13 +44,13 @@ export class AppModule {
     // console.log('Cookie Key:',process.env.COOKIE_KEY);
     // console.log('ENV', process.env.NODE_ENV);
     console.log('PORT:', this.configService.get('PORT'));
-   }
+  }
 
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
         cookieSession({
-          keys: [process.env.COOKIE_KEY],//[this.configService.get('COOKIE_KEY')],
+          keys: [process.env.COOKIE_KEY], //[this.configService.get('COOKIE_KEY')],
         }),
       )
       .forRoutes('*');
