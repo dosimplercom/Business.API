@@ -1,0 +1,42 @@
+{
+    "general": {
+        "welcome": "Bienvenue sur l'API de dosimpler.com !",
+        "healthy": "L'API est en bonne santé"
+    },
+    "status": {
+        "not_found": "La ressource demandée est introuvable.",
+        "unauthorized": "Vous n'êtes pas autorisé à accéder à cette ressource.",
+        "forbidden": "Vous êtes interdit d'accès à cette ressource",
+        "missing_fields": "Le chargement est manquant des champs requis"
+    },
+    "error": {
+        "too_many_requests": "Trop de demandes",
+        "requests_exceeded": "Vous avez dépassé la limite de 100 demandes en 15 minutes ! Adresse IP {{IP}}",
+        "internal": "Erreur interne du serveur"
+    },
+    "validation": {
+        "required": "{0} est requis",
+        "string": "{0} doit être une chaîne de caractères",
+        "minLength": "{0} doit comporter au moins {1} caractères",
+        "minValue": "{0} doit être un entier supérieur ou égal à {1}"
+    },
+    "account": {
+        "not_found": "Compte introuvable",
+        "is_configured": "Le compte est déjà configuré",
+        "failed_create_business": "Échec de la création d'une entreprise",
+        "failed_create_account": "Échec de la création d'un compte",
+        "failed_bind_business_account": "Échec de l'association de l'entreprise au compte",
+        "exists_proceed_with_login": "Le compte existe déjà. Veuillez essayer de vous connecter",
+        "invalid_credentials": "Nom d'utilisateur ou mot de passe invalide",
+        "email_sent_if_exists": "Si l'email est enregistré, un email sera envoyé",
+        "password_mismatch": "Les mots de passe ne correspondent pas",
+        "failed_reset_password": "Échec de la réinitialisation du mot de passe",
+        "email_already_exists": "L'email fourni est déjà utilisé",
+        "role_not_found": "Rôle introuvable",
+        "role_not_allowed": "Rôle non autorisé",
+        "do_not_delete_this_account": "Le compte ne peut pas être supprimé en raison de restrictions",
+        "invalid_code": "Le code fourni est invalide",
+        "expired_code": "Le code fourni est expiré",
+        "email_verified": "Cet email est déjà vérifié"
+    }
+}

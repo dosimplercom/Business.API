@@ -1,0 +1,42 @@
+{
+    "general": {
+        "welcome": "¡Bienvenido a la API de dosimpler.com!",
+        "healthy": "La API está saludable"
+    },
+    "status": {
+        "not_found": "El recurso solicitado no fue encontrado.",
+        "unauthorized": "No está autorizado para acceder a este recurso.",
+        "forbidden": "Está prohibido acceder a este recurso",
+        "missing_fields": "Faltan campos requeridos en el payload"
+    },
+    "error": {
+        "too_many_requests": "Demasiadas solicitudes",
+        "requests_exceeded": "¡Ha excedido el límite de 100 solicitudes en 15 minutos! Dirección IP {{IP}}",
+        "internal": "Error Interno del Servidor"
+    },
+    "validation": {
+        "required": "{0} es requerido",
+        "string": "{0} debe ser una cadena",
+        "minLength": "{0} debe tener al menos {1} caracteres",
+        "minValue": "{0} debe ser un entero mayor o igual a {1}"
+    },
+    "account": {
+        "not_found": "Cuenta no encontrada",
+        "is_configured": "La cuenta ya está configurada",
+        "failed_create_business": "Error al crear un Negocio",
+        "failed_create_account": "Error al crear una Cuenta",
+        "failed_bind_business_account": "Error al vincular Negocio a Cuenta",
+        "exists_proceed_with_login": "La cuenta ya existe. Por favor intente iniciar sesión",
+        "invalid_credentials": "Nombre de usuario o contraseña inválidos",
+        "email_sent_if_exists": "Si el correo electrónico está registrado, se enviará un correo electrónico",
+        "password_mismatch": "Las contraseñas no coinciden",
+        "failed_reset_password": "Error al restablecer la contraseña",
+        "email_already_exists": "El correo electrónico proporcionado ya está en uso",
+        "role_not_found": "Rol no encontrado",
+        "role_not_allowed": "Rol no permitido",
+        "do_not_delete_this_account": "La cuenta no puede ser eliminada debido a restricciones",
+        "invalid_code": "El código proporcionado es inválido",
+        "expired_code": "El código proporcionado ha expirado",
+        "email_verified": "Este correo electrónico ya está verificado"
+    }
+}

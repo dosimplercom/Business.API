@@ -8,6 +8,12 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { AppDataSource } from 'typeorm.config';
+import {
+  AcceptLanguageResolver,
+  I18nJsonLoader,
+  I18nModule,
+} from 'nestjs-i18n';
+import * as path from 'path';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -21,6 +27,20 @@ const cookieSession = require('cookie-session');
     }),
     TypeOrmModule.forRoot({
       ...AppDataSource.options,
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        pathPattern: '**/*.json',
+        watch: true,
+      },
+      loader: I18nJsonLoader,
+      resolvers: [
+        AcceptLanguageResolver
+        //{ use: AcceptLanguageResolver, options: ['en', 'am', 'ru'] },
+        //new HeaderResolver(['Accept-Language']),
+      ],
     }),
     UsersModule,
     ReportsModule,

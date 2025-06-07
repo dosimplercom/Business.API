@@ -1,0 +1,42 @@
+{
+    "general": {
+        "welcome": "Добро пожаловать в API dosimpler.com!",
+        "healthy": "API работает нормально"
+    },
+    "status": {
+        "not_found": "Запрашиваемый ресурс не найден.",
+        "unauthorized": "У вас нет прав доступа к этому ресурсу.",
+        "forbidden": "Вам запрещен доступ к этому ресурсу",
+        "missing_fields": "В запросе отсутствуют необходимые поля"
+    },
+    "error": {
+        "too_many_requests": "Слишком много запросов",
+        "requests_exceeded": "Вы превысили лимит в 100 запросов за 15 минут! IP адрес {{IP}}",
+        "internal": "Внутренняя ошибка сервера"
+    },
+    "validation": {
+        "required": "{0} обязательно для заполнения",
+        "string": "{0} должно быть строкой",
+        "minLength": "{0} должно быть не менее {1} символов",
+        "minValue": "{0} должно быть целым числом, больше или равно {1}"
+    },
+    "account": {
+        "not_found": "Аккаунт не найден",
+        "is_configured": "Аккаунт уже настроен",
+        "failed_create_business": "Не удалось создать бизнес",
+        "failed_create_account": "Не удалось создать аккаунт",
+        "failed_bind_business_account": "Не удалось привязать бизнес к аккаунту",
+        "exists_proceed_with_login": "Аккаунт уже существует. Пожалуйста, попробуйте войти",
+        "invalid_credentials": "Неверное имя пользователя или пароль",
+        "email_sent_if_exists": "Если email зарегистрирован, на него будет отправлено письмо",
+        "password_mismatch": "Пароли не совпадают",
+        "failed_reset_password": "Не удалось сбросить пароль",
+        "email_already_exists": "Указанный email уже используется",
+        "role_not_found": "Роль не найдена",
+        "role_not_allowed": "Роль не разрешена",
+        "do_not_delete_this_account": "Аккаунт не может быть удален из-за ограничений",
+        "invalid_code": "Указанный код недействителен",
+        "expired_code": "Указанный код истек",
+        "email_verified": "Этот email уже подтвержден"
+    }
+}

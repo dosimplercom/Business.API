@@ -3,9 +3,15 @@
 ### Days
 
 GET {{baseUrl}}/sys/days
+Accept-Language: fr
 
 ### Industries
 GET {{baseUrl}}/sys/industries
+Accept-Language: fr
 
 ### Timezones
 GET {{baseUrl}}/sys/timezones
+
+### hello
+GET {{baseUrl}}/sys/hello
+Accept-Language: es

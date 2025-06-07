@@ -1,24 +1,28 @@
-/*
-https://docs.nestjs.com/controllers#controllers
-*/
-
 import { Controller, Get } from '@nestjs/common';
 import { SysDataService } from './sys-data.service';
-import { sys_language_enum } from 'src/enums/language.enum';
+import { I18n, I18nContext } from 'nestjs-i18n';
+import { getLanguageId } from 'src/shared/global-functions';
 
 @Controller('sys')
 export class SysDataController {
   constructor(private service: SysDataService) {}
   @Get('days')
-  async getSysData() {
-    return await this.service.getDays(sys_language_enum.en);//todo: language from locale
+  async getSysData(@I18n() i18n: I18nContext) {
+    return await this.service.getDays(getLanguageId(i18n.lang));
   }
   @Get('industries')
-  async getIndustries() {
-    return await this.service.getIndustries(sys_language_enum.en);//todo: language from locale
+  async getIndustries(@I18n() i18n: I18nContext) {
+    return await this.service.getIndustries(getLanguageId(i18n.lang)); 
   }
   @Get('timezones')
   async getTimezones() {
     return await this.service.getTimezones();
+  }
+
+  @Get('hello')
+  greet(@I18n() i18n: I18nContext) {
+    console.log('Detected language:', i18n.lang);
+
+    return i18n.t('resources.general.welcome');
   }
 }

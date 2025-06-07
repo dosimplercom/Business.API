@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { I18nService } from 'nestjs-i18n';
 import { SysTimeZone } from 'src/entities/sys-time-zone.entity';
 import { sys_data_type_enum } from 'src/enums/data_type_enum';
 import { sys_language_enum } from 'src/enums/language.enum';
@@ -12,9 +13,9 @@ import { DataSource, Repository } from 'typeorm';
 @Injectable()
 export class SysDataService {
   constructor(
-    @InjectRepository(SysTimeZone)
-    private repTZ: Repository<SysTimeZone>,
     @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(SysTimeZone) private repTZ: Repository<SysTimeZone>,
+    private readonly i18nService: I18nService,
   ) {}
   async getDays(lan: sys_language_enum) {
     try {
@@ -26,7 +27,7 @@ export class SysDataService {
     } catch (error) {
       console.error('Error fetching data:', error);
       return new UnprocessableEntityException({
-        message: 'Error fetching data',
+        message: this.i18nService.t('resources.error.error_fetching_date'),
       });
     }
   }
@@ -40,7 +41,7 @@ export class SysDataService {
     } catch (error) {
       console.error('Error fetching data:', error);
       return new UnprocessableEntityException({
-        message: 'Error fetching data',
+        message: this.i18nService.t('resources.error.error_fetching_date'),
       });
     }
   }
