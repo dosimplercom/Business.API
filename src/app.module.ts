@@ -1,10 +1,9 @@
 import { SysDataModule } from './controllers/sys-data/sys-data.module';
 import { Module, ValidationPipe, MiddlewareConsumer } from '@nestjs/common';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { AppController } from './controllers/app.controller';
 import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { AppDataSource } from 'typeorm.config';
@@ -14,6 +13,8 @@ import {
   I18nModule,
 } from 'nestjs-i18n';
 import * as path from 'path';
+import { GlobalExceptionFilter } from './filters/http-exception.filter';
+import { RateLimiterMiddleware } from './middleware/rate-limiter.middleware';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -37,7 +38,7 @@ const cookieSession = require('cookie-session');
       },
       loader: I18nJsonLoader,
       resolvers: [
-        AcceptLanguageResolver
+        AcceptLanguageResolver,
         //{ use: AcceptLanguageResolver, options: ['en', 'am', 'ru'] },
         //new HeaderResolver(['Accept-Language']),
       ],
@@ -48,30 +49,35 @@ const cookieSession = require('cookie-session');
   ],
   controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({
-        whitelist: true,
+        whitelist: true, // strip unknown props
+        forbidNonWhitelisted: true, // throw error if unknown props are present
+        transform: true, // convert payload to DTO instance
       }),
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
   ],
 })
 export class AppModule {
-  constructor(private configService: ConfigService) {
-    console.log('AppModule initialized');
-    // console.log('Config Service:', this.configService);
-    // console.log('Cookie Key:',process.env.COOKIE_KEY);
-    // console.log('ENV', process.env.NODE_ENV);
-    console.log('PORT:', this.configService.get('PORT'));
+  constructor() {
+    // private configService: ConfigService
+    console.log('AppModule Initialized');
+    //console.log('PORT:', this.configService.get('PORT'));
   }
 
   configure(consumer: MiddlewareConsumer) {
+    console.log('Configuring middleware in AppModule');
     consumer
       .apply(
         cookieSession({
           keys: [process.env.COOKIE_KEY], //[this.configService.get('COOKIE_KEY')],
         }),
+        RateLimiterMiddleware,
       )
       .forRoutes('*');
   }
