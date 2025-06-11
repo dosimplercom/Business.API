@@ -1,3 +1,4 @@
+import { TranslationModule } from './i18n/translation.module';
 import { SysDataModule } from './controllers/sys-data/sys-data.module';
 import { Module, ValidationPipe, MiddlewareConsumer } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
@@ -19,6 +20,7 @@ const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
+    TranslationModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV
@@ -47,6 +49,7 @@ const cookieSession = require('cookie-session');
     ReportsModule,
     SysDataModule,
   ],
+  exports: [TranslationModule],
   controllers: [AppController],
   providers: [
     {
