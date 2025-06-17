@@ -1,12 +1,17 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { UsersService } from '../users.service';
-import { User } from '../user.entity';
 
 declare global {
   namespace Express {
     interface Request {
-      currentUser?: User;
+      currentUser?: {
+        id: number;
+        full_name: string;
+        email: string;
+        refresh: string;
+        business_id?: number;
+      };
     }
   }
 }
@@ -16,12 +21,15 @@ export class CurrentUserMiddleware implements NestMiddleware {
   constructor(private usersService: UsersService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const { userId } = req.session || {};
+    //come back to this later. Do we need this middleware?
+    // probably we can use the JwtAuthGuard instead.
 
-    if (userId) {
-      const user = await this.usersService.findOne(userId);
-      req.currentUser = user;
-    }
+    // const { id } = req.currentUser || {};
+    // console.log(`CurrentUserMiddleware is running, id=${id}`);
+    // if (id) {
+    //   const user = await this.usersService.findOne(id);
+    //   req.currentUser = user;
+    // }
 
     next();
   }

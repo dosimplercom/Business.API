@@ -32,7 +32,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       exception instanceof HttpException ? exception.getResponse() : null;
 
     // Try to get translated message
-    let message = 'error.internal';
+    let message = 'resources.error.internal';
     if (typeof errorResponse === 'string') {
       message = errorResponse;
     } else if (

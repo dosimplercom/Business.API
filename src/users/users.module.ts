@@ -13,6 +13,7 @@ import { CurrentUserMiddleware } from './middlewares/current-user.middleware';
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {
+    console.log('Configuring UsersModule middleware');
     consumer.apply(CurrentUserMiddleware).forRoutes('*');
   }
 }

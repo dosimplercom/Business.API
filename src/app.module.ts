@@ -1,3 +1,5 @@
+import { VerificationCodeService } from './shared/modules/email-sender/verification-code.service';
+import { AccountModule } from './controllers/account/account.module';
 import { TranslationModule } from './i18n/translation.module';
 import { SysDataModule } from './controllers/sys-data/sys-data.module';
 import { Module, ValidationPipe, MiddlewareConsumer } from '@nestjs/common';
@@ -16,10 +18,13 @@ import {
 import * as path from 'path';
 import { GlobalExceptionFilter } from './filters/http-exception.filter';
 import { RateLimiterMiddleware } from './middleware/rate-limiter.middleware';
+import { EmailSenderModule } from './shared/modules/email-sender/email-sender.module';
 const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
+    EmailSenderModule,
+    AccountModule,
     TranslationModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -74,7 +79,6 @@ export class AppModule {
   }
 
   configure(consumer: MiddlewareConsumer) {
-    console.log('Configuring middleware in AppModule');
     consumer
       .apply(
         cookieSession({

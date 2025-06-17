@@ -1,0 +1,35 @@
+## Login
+@baseUrl = http://localhost:3000
+
+### login
+POST {{baseUrl}}/account/login
+content-type: application/json
+
+{
+  "email": "chlingarian.g@gmail.com",
+  "password": "000"
+}
+
+### VerifyCode
+POST {{baseUrl}}/account/login/email/verify
+content-type: application/json
+authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDEzMjc3MywiZXhwIjoxNzUwMTMzNjczfQ.vjjtqpiEs8oXiT4M-5TX2fB6TCh8n4kg7tZi9tHqMg0
+
+{
+    "code": "LBJPTS"
+}
+
+
+
+
+
+
+
+
+
+# ## send code
+# POST url HTTP/1.1
+# header name: header value
+
+# content
+# Authorization: Bearer: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDEzMDQ2NiwiZXhwIjoxNzUwMTMxMzY2fQ.R45Ip9zyf5uwOrEJ2zSwZ-lxD89-JLOtk0ZfEFJSpjo"
