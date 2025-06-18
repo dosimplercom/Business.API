@@ -1,6 +1,6 @@
 // src/modules/account/account.repository.ts
-import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 import { getFullName } from 'src/shared/methods';
 import { DropdownItemExDTO } from 'src/shared/models/dropdown.model';
 import {
@@ -8,12 +8,44 @@ import {
   CustomerDTO,
   StaffEntityCreationResponseCT,
 } from './dto/account.model';
-import { UpdateStaffDto } from './dto/account.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserAuth } from 'src/entities/user-auth.entity';
 
 @Injectable()
 export class AccountRepository {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    @InjectRepository(UserAuth)
+    private readonly userAuthRepo: Repository<UserAuth>,
+  ) {}
+  async getById(entity_id: number) {
+    const user_auth = await this.userAuthRepo.findOne({
+      where: { entity_id },
+      relations: ['entity'],
+    });
 
+    if (!user_auth) {
+      throw new BadRequestException('resources.account.not_found');
+    }
+
+    return user_auth;
+  }
+  async getByEmail(email: string, throwException = true) {
+    const user_auth = await this.userAuthRepo.findOne({
+      where: { email },
+      relations: ['entity'],
+    });
+
+    if (throwException && !user_auth) {
+      throw new BadRequestException('resources.account.not_found');
+    }
+
+    return user_auth;
+  }
+
+  async saveUser(user: UserAuth) {
+    return this.userAuthRepo.save(user);
+  }
   async checkEmailUsedForStaff(email: string): Promise<boolean> {
     const res = await this.dataSource.query(
       `SELECT e.id FROM entity e 
@@ -22,25 +54,6 @@ export class AccountRepository {
       [email],
     );
     return res.length > 0;
-  }
-  async getById(id: number) {
-    const res = await this.dataSource.query(
-      `SELECT e.*, u.* FROM entity e 
-       INNER JOIN user_auth u ON e.id = u.entity_id 
-       WHERE e.id = $1`,
-      [id],
-    );
-    return res[0];
-  }
-
-  async getByEmail(email: string) {
-    const res = await this.dataSource.query(
-      `SELECT e.*, u.* FROM entity e 
-       INNER JOIN user_auth u ON e.id = u.entity_id 
-       WHERE u.email = $1`,
-      [email],
-    );
-    return res[0];
   }
   async registerStaff(
     data: any,
@@ -105,29 +118,6 @@ export class AccountRepository {
       }),
     );
   }
-  async updateStaffEmailVerified(id: number) {
-    return this.dataSource.query(
-      `UPDATE user_auth SET email_verified = true WHERE entity_id = $1`,
-      [id],
-    );
-  }
-
-  async getAllRoles(businessId: number) {
-    const sql = `
-      SELECT id, name, description 
-      FROM role 
-      WHERE system_role = TRUE OR business_id = $1`;
-
-    return await this.dataSource.query(sql, [businessId]);
-  }
-
-  async getRoleById(id: number) {
-    const result = await this.dataSource.query(
-      `SELECT * FROM role WHERE id = $1`,
-      [id],
-    );
-    return result[0];
-  }
 
   async getStaffPreferences(staffId: number) {
     const result = await this.dataSource.query(
@@ -160,80 +150,124 @@ export class AccountRepository {
     );
   }
 
-  async updateStaffPassword(id: number, password: string) {
-    return this.dataSource.query(
-      `UPDATE user_auth SET password = $1 WHERE entity_id = $2`,
-      [password, id],
-    );
-  }
+  // async getById(id: number) {
+  //   const res = await this.dataSource.query(
+  //     `SELECT e.*, u.* FROM entity e
+  //      INNER JOIN user_auth u ON e.id = u.entity_id
+  //      WHERE e.id = $1`,
+  //     [id],
+  //   );
+  //   return res[0];
+  // }
 
-  // TODO: Review this. move to SP or something.
-  //
-  async updateStaff(staff_id: number, dto: UpdateStaffDto) {
-    let userUpdate: any = {};
-    let entityUpdate: any = {};
+  // async getByEmail(email: string) {
+  //   const res = await this.dataSource.query(
+  //     `SELECT e.*, u.* FROM entity e
+  //      INNER JOIN user_auth u ON e.id = u.entity_id
+  //      WHERE u.email = $1`,
+  //     [email],
+  //   );
+  //   return res[0];
+  // }
 
-    if (dto.email) {
-      userUpdate.email = dto.email;
-      userUpdate.email_verified = false;
-    }
-    if (dto.password) {
-      userUpdate.password = dto.password;
-    }
-    if (!!dto.role_id) {
-      userUpdate.role_id = dto.role_id;
-    }
-    if (Object.keys(userUpdate).length > 0) {
-      userUpdate.updated_at = new Date().toISOString();
-    }
+  // async updateStaffEmailVerified(id: number) {
+  //   return this.dataSource.query(
+  //     `UPDATE user_auth SET email_verified = true WHERE entity_id = $1`,
+  //     [id],
+  //   );
+  // }
 
-    if (dto.first_name) {
-      entityUpdate.first_name = dto.first_name;
-    }
-    if (dto.last_name) {
-      entityUpdate.last_name = dto.last_name;
-    }
+  // async getAllRoles(businessId: number) {
+  //   const sql = `
+  //     SELECT id, name, description
+  //     FROM role
+  //     WHERE system_role = TRUE OR business_id = $1`;
 
-    let [user] =
-      Object.keys(userUpdate).length == 0
-        ? await this.dataSource.query(
-            'SELECT * FROM user_auth WHERE entity_id = $1',
-            [staff_id],
-          )
-        : [null];
-    if (!user) {
-      const columns = Object.keys(userUpdate);
-      const values = Object.values(userUpdate);
-      const setClause = columns
-        .map((col, index) => `${col} = $${index + 1}`)
-        .join(', ');
-      const sql = `UPDATE user_auth SET ${setClause} WHERE entity_id = $${
-        columns.length + 1
-      } RETURNING *`;
+  //   return await this.dataSource.query(sql, [businessId]);
+  // }
 
-      [user] = await this.dataSource.query(sql, [...values, staff_id]);
-    }
+  // async getRoleById(id: number) {
+  //   const result = await this.dataSource.query(
+  //     `SELECT * FROM role WHERE id = $1`,
+  //     [id],
+  //   );
+  //   return result[0];
+  // }
 
-    let [entity] =
-      Object.keys(entityUpdate).length == 0
-        ? await this.dataSource.query(
-            'SELECT * FROM entity WHERE entity_id = $1',
-            [staff_id],
-          )
-        : [null];
-    if (!entity) {
-      const columns = Object.keys(entityUpdate);
-      const values = Object.values(entityUpdate);
-      const setClause = columns
-        .map((col, index) => `${col} = $${index + 1}`)
-        .join(', ');
-      const sql = `UPDATE entity SET ${setClause} WHERE entity_id = $${
-        columns.length + 1
-      } RETURNING *`;
+  // async updateStaffPassword(id: number, password: string) {
+  //   return this.dataSource.query(
+  //     `UPDATE user_auth SET password = $1 WHERE entity_id = $2`,
+  //     [password, id],
+  //   );
+  // }
 
-      [entity] = await this.dataSource.query(sql, [...values, staff_id]);
-    }
+  // // TODO: Review this. move to SP or something.
+  // //
+  // async updateStaff(staff_id: number, dto: UpdateStaffDto) {
+  //   let userUpdate: any = {};
+  //   let entityUpdate: any = {};
 
-    return { user, entity };
-  }
+  //   if (dto.email) {
+  //     userUpdate.email = dto.email;
+  //     userUpdate.email_verified = false;
+  //   }
+  //   if (dto.password) {
+  //     userUpdate.password = dto.password;
+  //   }
+  //   if (!!dto.role_id) {
+  //     userUpdate.role_id = dto.role_id;
+  //   }
+  //   if (Object.keys(userUpdate).length > 0) {
+  //     userUpdate.updated_at = new Date().toISOString();
+  //   }
+
+  //   if (dto.first_name) {
+  //     entityUpdate.first_name = dto.first_name;
+  //   }
+  //   if (dto.last_name) {
+  //     entityUpdate.last_name = dto.last_name;
+  //   }
+
+  //   let [user] =
+  //     Object.keys(userUpdate).length == 0
+  //       ? await this.dataSource.query(
+  //           'SELECT * FROM user_auth WHERE entity_id = $1',
+  //           [staff_id],
+  //         )
+  //       : [null];
+  //   if (!user) {
+  //     const columns = Object.keys(userUpdate);
+  //     const values = Object.values(userUpdate);
+  //     const setClause = columns
+  //       .map((col, index) => `${col} = $${index + 1}`)
+  //       .join(', ');
+  //     const sql = `UPDATE user_auth SET ${setClause} WHERE entity_id = $${
+  //       columns.length + 1
+  //     } RETURNING *`;
+
+  //     [user] = await this.dataSource.query(sql, [...values, staff_id]);
+  //   }
+
+  //   let [entity] =
+  //     Object.keys(entityUpdate).length == 0
+  //       ? await this.dataSource.query(
+  //           'SELECT * FROM entity WHERE entity_id = $1',
+  //           [staff_id],
+  //         )
+  //       : [null];
+  //   if (!entity) {
+  //     const columns = Object.keys(entityUpdate);
+  //     const values = Object.values(entityUpdate);
+  //     const setClause = columns
+  //       .map((col, index) => `${col} = $${index + 1}`)
+  //       .join(', ');
+  //     const sql = `UPDATE entity SET ${setClause} WHERE entity_id = $${
+  //       columns.length + 1
+  //     } RETURNING *`;
+
+  //     [entity] = await this.dataSource.query(sql, [...values, staff_id]);
+  //   }
+
+  //   return { user, entity };
+  // }
 }

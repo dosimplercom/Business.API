@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import * as jwt from 'jsonwebtoken';
-import { TokenDataDTO } from './dto/account.model';
 import { getFullName } from 'src/shared/methods';
 
 import { Response } from 'express';
 import * as crypto from 'crypto';
+import { UserAuth } from 'src/entities/user-auth.entity';
 
 const scrypt = promisify(_scrypt);
 
@@ -53,7 +53,10 @@ export class AuthService {
     return jwt.sign({ id: entityId }, secret, { expiresIn });
   }
 
-  generateJWTokens(account: TokenDataDTO): {
+  generateJWTokens(
+    account: UserAuth,
+    refresh: boolean,
+  ): {
     accessToken: string;
     refreshToken: string;
   } {
@@ -72,10 +75,13 @@ export class AuthService {
     }
 
     const data: any = {
-      id: account.id,
-      full_name: getFullName(account.first_name, account.last_name),
+      id: account.entity_id,
+      full_name: getFullName(
+        account.entity.first_name,
+        account.entity.last_name,
+      ),
       email: account.email,
-      refresh: account.refresh,
+      refresh: refresh,
     };
     if (account.business_id) {
       data.business_id = account.business_id;

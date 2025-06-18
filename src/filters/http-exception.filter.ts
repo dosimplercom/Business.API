@@ -33,6 +33,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     // Try to get translated message
     let message = 'resources.error.internal';
+    let translated = '';
     if (typeof errorResponse === 'string') {
       message = errorResponse;
     } else if (
@@ -40,18 +41,21 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       typeof errorResponse === 'object' &&
       'message' in errorResponse
     ) {
-      message = (errorResponse as any).message;
+      translated = (errorResponse as any).message;
+      if (Array.isArray(translated)) {
+        translated = translated[0];
+      }
     }
 
-    const lang =
-      request.headers['accept-language'] ||
-      request.headers['x-custom-lang'] ||
-      'en';
-
-    const translated = await this.i18n.translate(message, {
-      lang: Array.isArray(lang) ? lang[0] : lang,
-    });
-
+    if (!translated) {
+      const lang =
+        request.headers['accept-language'] ||
+        request.headers['x-custom-lang'] ||
+        'en';
+      translated = await this.i18n.translate(message, {
+        lang: Array.isArray(lang) ? lang[0] : lang,
+      });
+    }
     console.error(
       `[${request.method}]: ${request.url}
        ${translated} →

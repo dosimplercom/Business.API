@@ -81,12 +81,3 @@ export interface AccountInternalDTO {
     password: string;
     role_id: number;
 }
-
-export interface TokenDataDTO {
-    id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-    refresh: boolean;
-    business_id: number | null;
-}

@@ -131,15 +131,16 @@ export class AccountController {
   @UseGuards(AuthenticatedGuard)
   async updateStaff(
     @Req() req: Request,
-    @Param('staff_id') staffId: string,
+    @Param('staff_id') staff_id: string,
     @Body() dto: UpdateStaffDto,
   ) {
     const user = req.currentUser;
     return await this.accountService.updateStaff(
-      user.id,
+      +staff_id,
+      dto,
       dto,
       user.business_id,
-      +staffId,
+      user.id,
     );
   }
   @HttpCode(HttpStatus.NO_CONTENT)

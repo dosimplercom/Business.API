@@ -2,34 +2,42 @@
 @baseUrl = http://localhost:3000
 
 ### login
+
 POST {{baseUrl}}/account/login
 content-type: application/json
 
 {
-  "email": "chlingarian.g@gmail.com",
-  "password": "000"
+    "email": "chlingarian.g@gmail.com",
+    "password": "000"
 }
 
 ### VerifyCode
+
 POST {{baseUrl}}/account/login/email/verify
 content-type: application/json
-authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDEzMjc3MywiZXhwIjoxNzUwMTMzNjczfQ.vjjtqpiEs8oXiT4M-5TX2fB6TCh8n4kg7tZi9tHqMg0
+authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDIxNDYzNCwiZXhwIjoxNzUwMzg3NDM0fQ.tG9Q50CMZ0IWXmkbG-ZG3r7sOdgZcPvUc9dzd3Wzz58
 
 {
-    "code": "LBJPTS"
+    "code": "7EBJ0K"
 }
 
+### Login
 
+PUT {{baseUrl}}/account/staff/12
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwODE5NDU3fQ.eNwa5YD8nj6LfVacKYpHjDZJv5Ae0Na58_W2vsXX2jw; Max-Age=604800; Path=/; Expires=Wed, 25 Jun 2025 02:44:17 GMT; HttpOnly; Secure,XSRF-TOKEN=d16adc7c319581f33e483d2df9c832f9c67e948a26ce18f04bc8fc51e079b24d; Path=/; Secure
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwMzg3NDU3fQ.YNLzRSCA4z6UyRlPxXdhfq9gYfmhZ2FNv_CgQrkBcOM
 
+{
+  "first_name": "Gurgen"
+}
 
-
-
-
-
-
-# ## send code
-# POST url HTTP/1.1
-# header name: header value
-
-# content
-# Authorization: Bearer: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDEzMDQ2NiwiZXhwIjoxNzUwMTMxMzY2fQ.R45Ip9zyf5uwOrEJ2zSwZ-lxD89-JLOtk0ZfEFJSpjo"
+### role/all
+GET {{baseUrl}}/account/role/all
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwODE5NDU3fQ.eNwa5YD8nj6LfVacKYpHjDZJv5Ae0Na58_W2vsXX2jw; Max-Age=604800; Path=/; Expires=Wed, 25 Jun 2025 02:44:17 GMT; HttpOnly; Secure,XSRF-TOKEN=d16adc7c319581f33e483d2df9c832f9c67e948a26ce18f04bc8fc51e079b24d; Path=/; Secure
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwMzg3NDU3fQ.YNLzRSCA4z6UyRlPxXdhfq9gYfmhZ2FNv_CgQrkBcOM

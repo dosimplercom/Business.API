@@ -1,11 +1,10 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import {
   AccountListDTO,
   StaffEntityDTO,
@@ -18,18 +17,21 @@ import {
   RegisterBusinessStaffDto,
   RegisterOwnerStaffDto,
   ResetPasswordDto,
-  UpdateStaffDto,
 } from './dto/account.dto';
 import { TranslationService } from 'src/i18n/translation.service';
 import { AuthService } from './auth.service';
 import { EmailSenderService } from 'src/shared/modules/email-sender/email-sender.service';
 import { VerificationCodeService } from 'src/shared/modules/email-sender/verification-code.service';
 import { Response } from 'express';
+import { UserAuth } from 'src/entities/user-auth.entity';
+import { EntityModel } from 'src/entities/entity.entity';
+import { Role } from 'src/entities/role.entity';
 
 @Injectable()
 export class AccountService {
   constructor(
-    @InjectDataSource() private readonly dataSource: DataSource,
+    @InjectRepository(Role)
+    private readonly roleRepo: Repository<Role>,
     private readonly accountRepo: AccountRepository,
     private readonly translationService: TranslationService,
     private readonly authService: AuthService,
@@ -88,18 +90,16 @@ export class AccountService {
     entity_id: number,
     checkAccountIsVerified: boolean,
   ): Promise<void> {
-    const account = await this.accountRepo.getById(entity_id);
-    if (!account || !account[0]) {
-      throw new BadRequestException('resources.account.not_found');
-    }
-    if (checkAccountIsVerified && account.email_verified) {
+    const user_auth = await this.accountRepo.getById(entity_id);
+
+    if (checkAccountIsVerified && user_auth.email_verified) {
       throw new BadRequestException('resources.account.email_verified');
     }
 
     try {
       await this.emailSenderService.sendVerificationCode(
-        account.entity_id,
-        account.email,
+        user_auth.entity_id,
+        user_auth.email,
         true,
       );
     } catch (error) {
@@ -112,11 +112,9 @@ export class AccountService {
     code: string,
     checkAccountIsVerified: boolean,
   ): Promise<{ verified: boolean; token: string }> {
-    const account = await this.accountRepo.getById(entity_id);
-    if (!account) {
-      throw new BadRequestException('resources.account.not_found');
-    }
-    if (checkAccountIsVerified && account.email_verified) {
+    const user_auth = await this.accountRepo.getById(entity_id);
+
+    if (checkAccountIsVerified && user_auth.email_verified) {
       throw new BadRequestException('resources.account.email_verified');
     }
 
@@ -133,17 +131,17 @@ export class AccountService {
     if (verificationCode.expires_at < new Date())
       throw new BadRequestException('resources.account.expired_code');
 
-    this.verificationCodeService.setVerificationTokenAsUsed(
-      verificationCode,
-    );
+    this.verificationCodeService.setVerificationTokenAsUsed(verificationCode);
 
-    if (!account.email_verified) {
-      this.accountRepo.updateStaffEmailVerified(entity_id);
+    if (!user_auth.email_verified) {
+      user_auth.email_verified = true;
+      this.accountRepo.saveUser(user_auth);
     }
 
-    account.refresh = !checkAccountIsVerified;
-    const { accessToken, refreshToken } =
-      this.authService.generateJWTokens(account);
+    const { accessToken, refreshToken } = this.authService.generateJWTokens(
+      user_auth,
+      !checkAccountIsVerified,
+    );
     if (!checkAccountIsVerified) {
       this.authService.addRefreshTokenCookie(res, refreshToken);
     }
@@ -213,19 +211,20 @@ export class AccountService {
 
     return response;
   }
+  // tested
   async updateStaff(
     staff_id: number,
-    dto: UpdateStaffDto,
+    inputUserAuth: Partial<UserAuth>,
+    inputEntity: Partial<EntityModel>,
     business_id: number,
     caller_id: number,
   ) {
     //TODO: validate caller and business and staff are all in the same business
-
-    const staffToUpdate = await this.accountRepo.getById(staff_id);
+    const dbUserAuth = await this.accountRepo.getById(staff_id);
     // check if updated email is used
-    if (!!dto.email && dto.email !== staffToUpdate.email) {
+    if (!!inputUserAuth.email && inputUserAuth.email !== dbUserAuth.email) {
       const emailUsed = await this.accountRepo.checkEmailUsedForStaff(
-        dto.email,
+        inputUserAuth.email,
       );
       if (emailUsed) {
         throw new BadRequestException(
@@ -235,53 +234,52 @@ export class AccountService {
     }
 
     //TODO: Future: check if business allowed to use this specific role (based on plan it has)
-    const role = await this.accountRepo.getRoleById(
-      dto.role_id || staffToUpdate.role_id,
-    );
+    const role = await this.roleRepo.findOne({
+      where: { id: inputUserAuth.role_id || dbUserAuth.role_id },
+    });
     if (!role || (!role.system_role && role.business_id !== business_id)) {
       throw new BadRequestException('resources.account.role_not_found');
     }
     if (
-      !!dto.role_id &&
-      staffToUpdate.rows[0].role_id !== dto.role_id &&
+      !!inputUserAuth.role_id &&
+      inputUserAuth.role_id !== dbUserAuth.role_id &&
       (role.owner_role || !role.system_role)
     ) {
       throw new BadRequestException('resources.account.role_not_allowed');
     }
 
-    if (!!dto.role_id && staffToUpdate.rows[0].role_id === dto.role_id) {
-      dto.role_id = null;
-    }
-    if (!!dto.email && staffToUpdate.rows[0].email === dto.email) {
-      dto.email = null;
+    if (!!inputUserAuth.email && inputUserAuth.email !== dbUserAuth.email) {
+      dbUserAuth.email_verified = false;
     }
 
-    let passwordHasChanged = true;
-    if (!!dto.password) {
+    let passwordHasChanged = false;
+    if (!!inputUserAuth.password) {
       passwordHasChanged = !(await this.authService.isCorrectPassword(
-        dto.password,
-        staffToUpdate.password,
+        inputUserAuth.password,
+        dbUserAuth.password,
       ));
-      dto.password = await this.authService.hashPassword(dto.password);
+      inputUserAuth.password = await this.authService.hashPassword(
+        inputUserAuth.password,
+      );
     }
+    Object.assign(dbUserAuth, inputUserAuth);
+    dbUserAuth.updated_at = new Date();
 
-    const updatedAccount = await this.accountRepo.updateStaff(staff_id, dto); //TODO
-    if (!updatedAccount) {
-      throw new UnprocessableEntityException('resources.account.not_found');
-    }
+    Object.assign(dbUserAuth.entity, inputEntity);
+    this.accountRepo.saveUser(dbUserAuth);
 
     const response: AccountListDTO = {
-      id: updatedAccount.entity?.id,
-      email: updatedAccount.user?.email,
+      id: dbUserAuth.entity?.id,
+      email: dbUserAuth.email,
       full_name: getFullName(
-        updatedAccount.entity?.first_name,
-        updatedAccount.entity?.last_name,
+        dbUserAuth.entity?.first_name,
+        dbUserAuth.entity?.last_name,
       ),
-      first_name: updatedAccount.entity?.first_name,
-      last_name: updatedAccount.entity?.last_name,
-      email_verified: updatedAccount.user?.email_verified,
+      first_name: dbUserAuth.entity?.first_name,
+      last_name: dbUserAuth.entity?.last_name,
+      email_verified: dbUserAuth.email_verified,
       url: '', // updatedAccount.staff?.url,
-      role_id: updatedAccount.user?.role_id,
+      role_id: dbUserAuth.role_id,
       role: {
         id: role.id,
         name: role.name,
@@ -292,8 +290,8 @@ export class AccountService {
     try {
       await this.emailSenderService.sendEmailChangeAlert(
         staff_id,
-        staffToUpdate.email,
-        dto.email,
+        dbUserAuth.email,
+        inputUserAuth.email,
         passwordHasChanged,
       );
     } catch (error) {}
@@ -309,18 +307,31 @@ export class AccountService {
   async getAllStaff(businessId: number) {
     return await this.accountRepo.getAllStaff(businessId);
   }
+  //tested
   async getAllRoles(businessId: number) {
-    return await this.accountRepo.getAllRoles(businessId);
+    return (
+      await this.roleRepo
+        .createQueryBuilder('role')
+        .where('role.business_id = :businessId', { businessId })
+        .orWhere('role.system_role = true')
+        .getMany()
+    ).map((m) => ({
+      id: m.id,
+      name: m.name,
+      description: m.description,
+    }));
   }
   async refreshToken(res: Response, id: number, business_id: number) {
-    const account = await this.accountRepo.getById(id);
-    if (!account || !account[0] || account.business_id !== business_id) {
+    const user_auth = await this.accountRepo.getById(id);
+
+    if (!user_auth || user_auth.business_id !== business_id) {
       throw new BadRequestException('resources.account.not_found');
     }
 
-    account.refresh = true;
-    const { accessToken, refreshToken } =
-      this.authService.generateJWTokens(account);
+    const { accessToken, refreshToken } = this.authService.generateJWTokens(
+      user_auth,
+      true,
+    );
     this.authService.addRefreshTokenCookie(res, refreshToken);
 
     return {
@@ -329,9 +340,7 @@ export class AccountService {
   }
   async loginAccount(dto: LoginDto) {
     const account = await this.accountRepo.getByEmail(dto.email);
-    if (!account) {
-      throw new BadRequestException('resources.account.not_found');
-    }
+
     const isCorrectPassword = await this.authService.isCorrectPassword(
       dto.password,
       account.password,
@@ -356,8 +365,7 @@ export class AccountService {
   }
 
   async forgotPassword(email: string) {
-    const account = await this.accountRepo.getByEmail(email);
-
+    const account = await this.accountRepo.getByEmail(email, false);
     if (!account) {
       return {
         message: this.translationService.t(
@@ -367,11 +375,11 @@ export class AccountService {
       };
     }
     await this.emailSenderService.sendVerificationCode(
-      account.id,
+      account.entity_id,
       account.email,
       false,
     );
-    const token = this.authService.generatePreAuthToken(account.id);
+    const token = this.authService.generatePreAuthToken(account.entity_id);
     return {
       message: this.translationService.t(
         'resources.account.email_sent_if_exists',
@@ -384,22 +392,10 @@ export class AccountService {
     if (dto.newPassword !== dto.confirmPassword) {
       throw new BadRequestException('resources.account.password_mismatch');
     }
-
     const account = await this.accountRepo.getByEmail(dto.email);
+    account.password = await this.authService.hashPassword(dto.newPassword);
+    this.accountRepo.saveUser(account);
 
-    if (!account) {
-      throw new BadRequestException('resources.account.not_found');
-    }
-    dto.newPassword = await this.authService.hashPassword(dto.newPassword);
-    const updatedAccount = await this.accountRepo.updateStaffPassword(
-      account.id,
-      dto.newPassword,
-    );
-    if (!updatedAccount) {
-      throw new UnprocessableEntityException(
-        'resources.account.failed_reset_password',
-      );
-    }
     return { success: true };
   }
 }
