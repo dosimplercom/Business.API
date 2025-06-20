@@ -123,14 +123,6 @@ export class AccountRepository {
     return await this.dataSource.query(query, [pattern, business_id]);
   }
 
-  async getStaffPreferences(staffId: number) {
-    const result = await this.dataSource.query(
-      `SELECT preferences FROM staff_preference WHERE staff_id = $1`,
-      [staffId],
-    );
-    return result[0]?.preferences || {};
-  }
-
   async deleteStaff(
     staff_id: number,
     business_id: number,
@@ -142,6 +134,14 @@ export class AccountRepository {
       //caller_id
     ]);
     return true;
+  }
+
+  async getStaffPreferences(staffId: number) {
+    const result = await this.dataSource.query(
+      `SELECT preferences FROM staff_preference WHERE staff_id = $1`,
+      [staffId],
+    );
+    return result[0]?.preferences || {};
   }
 
   async updateStaffPreference(staffId: number, key: string, value: string) {

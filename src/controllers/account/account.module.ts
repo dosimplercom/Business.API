@@ -14,6 +14,7 @@ import { RoleController } from './role/role.controller';
 import { StaffController } from './staff/staff.controller';
 import { RegistrationController } from './register/register.controller';
 import { AuthController } from './auth/auth.controller';
+import { PreferenceController } from './preference/preference.controller';
 
 @Module({
   controllers: [
@@ -22,6 +23,7 @@ import { AuthController } from './auth/auth.controller';
     StaffController,
     CustomerController,
     RoleController,
+    PreferenceController
   ],
   providers: [AccountService, RoleService, AccountRepository, AuthService],
   imports: [

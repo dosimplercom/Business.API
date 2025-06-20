@@ -85,3 +85,12 @@ export class SearchCustomersDto {
   @MinLength(2)
   pattern: string;
 }
+export class KeyValueDto {
+  @IsString()
+  @IsNotEmpty()
+  key: string;
+
+  @IsString()
+  @IsNotEmpty()
+  value: string;
+}

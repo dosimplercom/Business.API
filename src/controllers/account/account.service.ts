@@ -13,6 +13,7 @@ import {
 import { getFullName } from 'src/shared/methods';
 import { AccountRepository } from './account.repository';
 import {
+  KeyValueDto,
   LoginDto,
   RegisterBusinessStaffDto,
   RegisterOwnerStaffDto,
@@ -388,5 +389,16 @@ export class AccountService {
     this.accountRepo.saveUser(account);
 
     return { success: true };
+  }
+
+  async getStaffPreferences(staff_id: number) {
+    return await this.accountRepo.getStaffPreferences(staff_id);
+  }
+  async updateStaffPreference(staff_id: number, dto: KeyValueDto) {
+    return await this.accountRepo.updateStaffPreference(
+      staff_id,
+      dto.key,
+      dto.value,
+    );
   }
 }
