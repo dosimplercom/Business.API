@@ -1,5 +1,6 @@
 ## Login
 @baseUrl = http://localhost:3000
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDM4MDM3NiwiZXhwIjoxNzUwNTUzMTc2fQ.8B9nSsvwItXqgf6qD6mr85hFNhTaNte_y2Y0_Zc0qvY
 
 ### login
 
@@ -15,29 +16,112 @@ content-type: application/json
 
 POST {{baseUrl}}/account/login/email/verify
 content-type: application/json
-authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDIxNDYzNCwiZXhwIjoxNzUwMzg3NDM0fQ.tG9Q50CMZ0IWXmkbG-ZG3r7sOdgZcPvUc9dzd3Wzz58
+authorization: Bearer: {{authToken}}
 
 {
-    "code": "7EBJ0K"
+    "code": "966JK2"
 }
+
+@cookie=refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDM4MDQ4MCwiZXhwIjoxNzUwOTg1MjgwfQ.-KxYSXV7Osjvy3BUvSLbzBslQ9aDZ6cqVcA0Uh2PURk; Max-Age=604800; Path=/; Expires=Fri, 27 Jun 2025 00:48:00 GMT; HttpOnly; Secure,XSRF-TOKEN=0846f9a8f17ed5fc4b3daab14b302a06174da5e4875743b69f8b84489935bbcc; Path=/; Secure
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDM4MDQ4MCwiZXhwIjoxNzUwNTUzMjgwfQ.N5BNF0JKteqo8YV86P8rwx71D-eQtcrKR6cx7HUKXz0
 
 ### Login
 
 PUT {{baseUrl}}/account/staff/12
 Vary: Origin
 Access-Control-Allow-Credentials: true
-Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwODE5NDU3fQ.eNwa5YD8nj6LfVacKYpHjDZJv5Ae0Na58_W2vsXX2jw; Max-Age=604800; Path=/; Expires=Wed, 25 Jun 2025 02:44:17 GMT; HttpOnly; Secure,XSRF-TOKEN=d16adc7c319581f33e483d2df9c832f9c67e948a26ce18f04bc8fc51e079b24d; Path=/; Secure
+Set-Cookie: {{cookie}}
 Content-Type: application/json; charset=utf-8
-Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwMzg3NDU3fQ.YNLzRSCA4z6UyRlPxXdhfq9gYfmhZ2FNv_CgQrkBcOM
+Authorization: Bearer: {{token}}
 
 {
-  "first_name": "Gurgen"
+    "first_name": "Gurgen"
 }
 
-### role/all
-GET {{baseUrl}}/account/role/all
+###
+
+PUT {{baseUrl}}/account/forgotPassword
 Vary: Origin
 Access-Control-Allow-Credentials: true
-Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwODE5NDU3fQ.eNwa5YD8nj6LfVacKYpHjDZJv5Ae0Na58_W2vsXX2jw; Max-Age=604800; Path=/; Expires=Wed, 25 Jun 2025 02:44:17 GMT; HttpOnly; Secure,XSRF-TOKEN=d16adc7c319581f33e483d2df9c832f9c67e948a26ce18f04bc8fc51e079b24d; Path=/; Secure
+Set-Cookie: {{cookie}}
 Content-Type: application/json; charset=utf-8
-Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDIxNDY1NywiZXhwIjoxNzUwMzg3NDU3fQ.YNLzRSCA4z6UyRlPxXdhfq9gYfmhZ2FNv_CgQrkBcOM
+Authorization: Bearer: {{token}}
+
+{
+    "email": "gug.chilo@gmail.com",
+    "newPassword": "000",
+    "confirmPassword": "000"
+}
+
+###
+
+PUT {{baseUrl}}/account/resetPassword
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Set-Cookie: {{cookie}}
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODAsImlhdCI6MTc1MDM4MTc4MSwiZXhwIjoxNzUwNTU0NTgxfQ.gso0kK8Mn8WYRb6a3Zl6qnVDIuxCNDvpdLesx4mu4Ew
+
+{
+    "email": "gug.chilo@gmail.com",
+    "newPassword": "000",
+    "confirmPassword": "000"
+}
+
+###
+
+POST {{baseUrl}}/account/refresh-token
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Cookie: {{cookie}}
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: {{token}}
+
+{
+    "email": "gug.chilo@gmail.com",
+    "newPassword": "000",
+    "confirmPassword": "000"
+}
+
+###
+
+POST {{baseUrl}}/account/staff
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Cookie: {{cookie}}
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: {{token}}
+
+{
+    "email": "gug.chiilo1@gmail.com",
+    "password": "000000",
+    "first_name": "string",
+    "last_name": "string",
+    "role_id": 1
+}
+
+### register business
+
+POST {{baseUrl}}/account/register
+Content-Type: application/json; charset=utf-8
+
+{
+    "email": "gug.chitgt@gmail.com",
+    "password": "000000",
+    "first_name": "string",
+    "last_name": "string"
+  
+}
+### resend email
+
+POST {{baseUrl}}/account/login/email/resend
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMwLCJpYXQiOjE3NTAzODMyNDAsImV4cCI6MTc1MDU1NjA0MH0.x__nAqiPL-UGDZrpFPkwM9V23rTAflJtoseTZZiI2QY
+
+{
+    "email": "gug.chitt@gmail.com",
+    "password": "000000",
+    "first_name": "string",
+    "last_name": "string"
+  
+}

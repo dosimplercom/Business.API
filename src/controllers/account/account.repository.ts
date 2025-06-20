@@ -128,13 +128,13 @@ export class AccountRepository {
   }
 
   async deleteStaff(
-    id: number,
-    businessId: number,
+    staff_id: number,
+    business_id: number,
     caller_id: number,
   ): Promise<boolean> {
     await this.dataSource.query(`SELECT public.remove_account($1, $2)`, [
-      id,
-      businessId,
+      staff_id,
+      business_id,
       //caller_id
     ]);
     return true;

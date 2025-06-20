@@ -21,6 +21,7 @@ import {
   VerifyEmailCodeDto,
   ResetPasswordDto,
   UpdateStaffDto,
+  ForgotPasswordDto,
 } from './dto/account.dto';
 import { LightAuthenticatedGuard } from 'src/guards/light-auth.guard';
 import { AuthenticatedGuard } from 'src/guards/jwt-auth.guard';
@@ -68,8 +69,8 @@ export class AccountController {
     return { message: 'Logged out successfully' };
   }
   @Put('forgotPassword')
-  async forgotPassword(@Body('email') email: string) {
-    return await this.accountService.forgotPassword(email);
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return await this.accountService.forgotPassword(dto.email);
   }
   @Put('resetPassword')
   @UseGuards(LightAuthenticatedGuard)
@@ -166,11 +167,10 @@ export class AccountController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = req.currentUser;
     return await this.accountService.refreshToken(
       res,
-      user.id,
-      user.business_id,
+      req.currentUser.id,
+      req.currentUser.business_id,
     );
   }
 }

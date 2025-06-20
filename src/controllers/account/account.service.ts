@@ -39,6 +39,7 @@ export class AccountService {
     private readonly verificationCodeService: VerificationCodeService,
   ) {}
 
+  // tested
   async registerOwnerStaff(
     dto: RegisterOwnerStaffDto,
   ): Promise<{ id: number; token: string }> {
@@ -47,9 +48,7 @@ export class AccountService {
     const emailUsed = await this.accountRepo.checkEmailUsedForStaff(email);
     if (emailUsed) {
       throw new BadRequestException(
-        this.translationService.t(
-          'resources.account.exists_proceed_with_login',
-        ),
+        'resources.account.exists_proceed_with_login',
       );
     }
 
@@ -106,6 +105,7 @@ export class AccountService {
       console.error('Failed to send verification email:', error);
     }
   }
+  // tested
   async verifyEmailCode(
     res: Response,
     entity_id: number,
@@ -147,6 +147,7 @@ export class AccountService {
     }
     return { verified: true, token: accessToken };
   }
+  // tested
   async registerBusinessStaff(
     businessId: number,
     dto: RegisterBusinessStaffDto,
@@ -154,9 +155,7 @@ export class AccountService {
     const emailUsed = await this.accountRepo.checkEmailUsedForStaff(dto.email);
     if (emailUsed) {
       throw new BadRequestException(
-        this.translationService.t(
-          'resources.account.exists_proceed_with_login',
-        ),
+        'resources.account.exists_proceed_with_login',
       );
     }
 
@@ -227,9 +226,7 @@ export class AccountService {
         inputUserAuth.email,
       );
       if (emailUsed) {
-        throw new BadRequestException(
-          this.translationService.t('resources.account.email_already_exists'),
-        );
+        throw new BadRequestException( 'resources.account.email_already_exists') ;
       }
     }
 
@@ -298,16 +295,19 @@ export class AccountService {
 
     return response;
   }
-  async deleteStaff(id: number, businessId: number, caller_id: number) {
-    return await this.accountRepo.deleteStaff(id, businessId, caller_id);
+  // tested
+  async deleteStaff(staff_id: number, business_id: number, caller_id: number) {
+    return await this.accountRepo.deleteStaff(staff_id, business_id, caller_id);
   }
+  // tested
   async getAllCustomers(businessId: number) {
     return await this.accountRepo.getAllCustomers(businessId);
   }
+  // tested
   async getAllStaff(businessId: number) {
     return await this.accountRepo.getAllStaff(businessId);
   }
-  //tested
+  // tested
   async getAllRoles(businessId: number) {
     return (
       await this.roleRepo
@@ -321,6 +321,7 @@ export class AccountService {
       description: m.description,
     }));
   }
+  // tested
   async refreshToken(res: Response, id: number, business_id: number) {
     const user_auth = await this.accountRepo.getById(id);
 
@@ -338,6 +339,7 @@ export class AccountService {
       token: accessToken,
     };
   }
+  // tested
   async loginAccount(dto: LoginDto) {
     const account = await this.accountRepo.getByEmail(dto.email);
 
@@ -360,10 +362,11 @@ export class AccountService {
     const token = this.authService.generatePreAuthToken(account.entity_id);
     return { message: 'Login successful', token };
   }
+  // tested
   logoutUser(res: Response) {
     this.authService.clearCookies(res);
   }
-
+  // tested
   async forgotPassword(email: string) {
     const account = await this.accountRepo.getByEmail(email, false);
     if (!account) {
@@ -387,7 +390,7 @@ export class AccountService {
       token,
     };
   }
-
+  // tested
   async resetPassword(dto: ResetPasswordDto) {
     if (dto.newPassword !== dto.confirmPassword) {
       throw new BadRequestException('resources.account.password_mismatch');
