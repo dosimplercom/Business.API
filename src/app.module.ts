@@ -1,4 +1,3 @@
-import { VerificationCodeService } from './shared/modules/email-sender/verification-code.service';
 import { AccountModule } from './controllers/account/account.module';
 import { TranslationModule } from './i18n/translation.module';
 import { SysDataModule } from './controllers/sys-data/sys-data.module';

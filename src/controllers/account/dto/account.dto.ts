@@ -1,4 +1,11 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
 
 export class RegisterOwnerStaffDto {
   @IsString()
@@ -71,4 +78,10 @@ export class UpdateStaffDto {
   @IsOptional()
   @IsNumber()
   role_id?: number;
+}
+
+export class SearchCustomersDto {
+  @IsString()
+  @MinLength(2)
+  pattern: string;
 }

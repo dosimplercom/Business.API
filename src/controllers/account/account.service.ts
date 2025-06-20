@@ -19,9 +19,9 @@ import {
   ResetPasswordDto,
 } from './dto/account.dto';
 import { TranslationService } from 'src/i18n/translation.service';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth/auth.service';
 import { EmailSenderService } from 'src/shared/modules/email-sender/email-sender.service';
-import { VerificationCodeService } from 'src/shared/modules/email-sender/verification-code.service';
+import { EmailTokenRepository } from 'src/shared/modules/email-sender/email-token.repository';
 import { Response } from 'express';
 import { UserAuth } from 'src/entities/user-auth.entity';
 import { EntityModel } from 'src/entities/entity.entity';
@@ -36,7 +36,7 @@ export class AccountService {
     private readonly translationService: TranslationService,
     private readonly authService: AuthService,
     private readonly emailSenderService: EmailSenderService,
-    private readonly verificationCodeService: VerificationCodeService,
+    private readonly eTokenRepo: EmailTokenRepository,
   ) {}
 
   // tested
@@ -45,7 +45,7 @@ export class AccountService {
   ): Promise<{ id: number; token: string }> {
     const { email, first_name, last_name, password } = dto;
 
-    const emailUsed = await this.accountRepo.checkEmailUsedForStaff(email);
+    const emailUsed = await this.accountRepo.isEmailUsedForStaff(email);
     if (emailUsed) {
       throw new BadRequestException(
         'resources.account.exists_proceed_with_login',
@@ -118,10 +118,7 @@ export class AccountService {
       throw new BadRequestException('resources.account.email_verified');
     }
 
-    const verificationCode = await this.verificationCodeService.getEmailToken(
-      entity_id,
-      code,
-    );
+    const verificationCode = await this.eTokenRepo.get(entity_id, code);
 
     if (!verificationCode) {
       throw new BadRequestException(
@@ -131,7 +128,7 @@ export class AccountService {
     if (verificationCode.expires_at < new Date())
       throw new BadRequestException('resources.account.expired_code');
 
-    this.verificationCodeService.setVerificationTokenAsUsed(verificationCode);
+    this.eTokenRepo.markAsUsed(verificationCode);
 
     if (!user_auth.email_verified) {
       user_auth.email_verified = true;
@@ -148,11 +145,11 @@ export class AccountService {
     return { verified: true, token: accessToken };
   }
   // tested
-  async registerBusinessStaff(
+  async addStaff(
     businessId: number,
     dto: RegisterBusinessStaffDto,
   ): Promise<AccountListDTO> {
-    const emailUsed = await this.accountRepo.checkEmailUsedForStaff(dto.email);
+    const emailUsed = await this.accountRepo.isEmailUsedForStaff(dto.email);
     if (emailUsed) {
       throw new BadRequestException(
         'resources.account.exists_proceed_with_login',
@@ -222,11 +219,11 @@ export class AccountService {
     const dbUserAuth = await this.accountRepo.getById(staff_id);
     // check if updated email is used
     if (!!inputUserAuth.email && inputUserAuth.email !== dbUserAuth.email) {
-      const emailUsed = await this.accountRepo.checkEmailUsedForStaff(
+      const emailUsed = await this.accountRepo.isEmailUsedForStaff(
         inputUserAuth.email,
       );
       if (emailUsed) {
-        throw new BadRequestException( 'resources.account.email_already_exists') ;
+        throw new BadRequestException('resources.account.email_already_exists');
       }
     }
 
@@ -303,24 +300,15 @@ export class AccountService {
   async getAllCustomers(businessId: number) {
     return await this.accountRepo.getAllCustomers(businessId);
   }
+  //
+  async searchCustomers(pattern: string, business_id: number) {
+    return await this.accountRepo.searchCustomers(pattern, business_id);
+  }
   // tested
   async getAllStaff(businessId: number) {
     return await this.accountRepo.getAllStaff(businessId);
   }
-  // tested
-  async getAllRoles(businessId: number) {
-    return (
-      await this.roleRepo
-        .createQueryBuilder('role')
-        .where('role.business_id = :businessId', { businessId })
-        .orWhere('role.system_role = true')
-        .getMany()
-    ).map((m) => ({
-      id: m.id,
-      name: m.name,
-      description: m.description,
-    }));
-  }
+
   // tested
   async refreshToken(res: Response, id: number, business_id: number) {
     const user_auth = await this.accountRepo.getById(id);

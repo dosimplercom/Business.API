@@ -85,7 +85,7 @@ Authorization: Bearer: {{token}}
 
 ###
 
-POST {{baseUrl}}/account/staff
+POST {{baseUrl}}/api/customer/search
 Vary: Origin
 Access-Control-Allow-Credentials: true
 Cookie: {{cookie}}
@@ -93,35 +93,30 @@ Content-Type: application/json; charset=utf-8
 Authorization: Bearer: {{token}}
 
 {
-    "email": "gug.chiilo1@gmail.com",
-    "password": "000000",
-    "first_name": "string",
-    "last_name": "string",
-    "role_id": 1
+    "pattern": "reg"
 }
 
 ### register business
 
-POST {{baseUrl}}/account/register
+POST {{baseUrl}}/api/business-account/register/owner
 Content-Type: application/json; charset=utf-8
 
 {
-    "email": "gug.chitgt@gmail.com",
+    "email": "gug.chitdgt@gmail.com",
     "password": "000000",
     "first_name": "string",
     "last_name": "string"
-  
 }
+
 ### resend email
 
-POST {{baseUrl}}/account/login/email/resend
+POST {{baseUrl}}/api/business-account/register/email/resend
 Content-Type: application/json; charset=utf-8
-Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMwLCJpYXQiOjE3NTAzODMyNDAsImV4cCI6MTc1MDU1NjA0MH0.x__nAqiPL-UGDZrpFPkwM9V23rTAflJtoseTZZiI2QY
+Authorization: Bearer: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTMxLCJpYXQiOjE3NTAzODk5MzEsImV4cCI6MTc1MDU2MjczMX0.UZWZsjdiGwMNRj2g4k4AdlmcqNQzMhvFJK2DpdclveM
 
 {
     "email": "gug.chitt@gmail.com",
     "password": "000000",
     "first_name": "string",
     "last_name": "string"
-  
 }

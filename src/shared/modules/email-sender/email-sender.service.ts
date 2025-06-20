@@ -2,16 +2,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { DataSource } from 'typeorm';
-import { VerificationCodeService } from './verification-code.service';
+import { EmailTokenRepository } from './email-token.repository';
+import { SendEmailBodyDTO } from './email-body.model';
 
 @Injectable()
 export class EmailSenderService {
   constructor(
     private readonly dataSource: DataSource,
-    private readonly verificationCodeService: VerificationCodeService,
-  ) {
-    // Initialization code if needed
-  }
+    private readonly eTokenRepo: EmailTokenRepository,
+  ) {}
 
   // Retrieve the authentication token to communicate with notification API
   private async getAuthToken(): Promise<string> {
@@ -25,23 +24,20 @@ export class EmailSenderService {
       throw error;
     }
   }
-  private async sendVerificationCodeByEmail(
-    entityId: number,
-    email: string,
-    code: string,
-  ): Promise<void> {
+
+  private async sendEmail(body: SendEmailBodyDTO): Promise<void> {
     const authToken = await this.getAuthToken();
 
     try {
       await axios.post(
         'https://notify-api.dosimpler.com/api/notifications/sendemail',
         {
-          userId: entityId,
           senderName: 'DOSIMPLER',
           senderEmail: 'dosimpler.com@gmail.com',
-          recipientEmail: email,
-          subject: 'Email Verification',
-          message: `Your verification code is ${code}`,
+          userId: body.entity_id,
+          recipientEmail: body.recipientEmail,
+          subject: body.subject,
+          message: body.message,
         },
         {
           headers: {
@@ -51,48 +47,21 @@ export class EmailSenderService {
         },
       );
     } catch (error) {
-      console.error(
-        'Failed to send email verification code:',
-        error?.response?.data || error.message,
-      );
-      throw new HttpException(
-        'Failed to send verification email',
-        HttpStatus.SERVICE_UNAVAILABLE,
-      );
+      const errorMessage = `Failed to send an email with subject ${body.subject}`;
+      console.error(errorMessage, error?.response?.data || error.message);
+      throw new HttpException(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
     }
   }
+
   async sendAccountAddedEmail(entityId: number, email: string): Promise<void> {
-    const authToken = await this.getAuthToken();
-    try {
-      await axios.post(
-        'https://notify-api.dosimpler.com/api/notifications/sendemail',
-        {
-          userId: entityId,
-          senderName: 'DOSIMPLER',
-          senderEmail: 'dosimpler.com@gmail.com',
-          recipientEmail: email,
-          subject: 'New Invitation to join the team',
-          message: `You were invited to join the Team on https://app.dosimpler.com 
+    await this.sendEmail({
+      entity_id: entityId,
+      recipientEmail: email,
+      subject: 'New Invitation to join the team',
+      message: `You were invited to join the Team on https://app.dosimpler.com 
       // Should we send single use link to set the password ? 
       // What is the workflow? `,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-    } catch (error) {
-      console.error(
-        'Failed to send email sendAccountAddedEmail:',
-        error?.response?.data || error.message,
-      );
-      throw new HttpException(
-        'Failed to send account added email',
-        HttpStatus.SERVICE_UNAVAILABLE,
-      );
-    }
+    });
   }
 
   async sendVerificationCode(
@@ -100,10 +69,7 @@ export class EmailSenderService {
     email: string,
     restrictedMode: boolean,
   ): Promise<void> {
-    let latestToken =
-      await this.verificationCodeService.getLatestEmailVerificationToken(
-        entityId,
-      );
+    let latestToken = await this.eTokenRepo.getLatest(entityId);
 
     const shouldGenerateNewToken =
       !latestToken ||
@@ -112,8 +78,7 @@ export class EmailSenderService {
         new Date(latestToken.created_at) < new Date(Date.now() - 60 * 1000));
 
     if (shouldGenerateNewToken) {
-      latestToken =
-        await this.verificationCodeService.addEmailVerificationToken(entityId);
+      latestToken = await this.eTokenRepo.create(entityId);
     } else {
       latestToken = null;
     }
@@ -122,11 +87,13 @@ export class EmailSenderService {
       console.log(
         `Sending email now with verification code: ${latestToken.token}`,
       );
-      await this.sendVerificationCodeByEmail(
-        entityId,
-        email,
-        latestToken.token,
-      );
+
+      await this.sendEmail({
+        entity_id: entityId,
+        recipientEmail: email,
+        subject: 'Email Verification',
+        message: `Your verification code is ${latestToken.token}`,
+      });
     }
   }
 
@@ -136,8 +103,6 @@ export class EmailSenderService {
     newEmail: string,
     passwordChanged: boolean,
   ) {
-    const authToken = await this.getAuthToken();
-
     let message = `${
       !!newEmail
         ? `Your email associated with your DOSIMPLER.com account has been changed to   ${newEmail} .`
@@ -145,24 +110,14 @@ export class EmailSenderService {
     }
     ${passwordChanged ? `Your password has been changed as well.` : ``}`;
     message = message.trim();
-    if (!!message.trim()) {
-      var res = await axios.post(
-        'https://notify-api.dosimpler.com/api/notifications/sendemail',
-        {
-          userId: entity_id,
-          senderName: 'DOSIMPLER',
-          senderEmail: 'dosimpler.com@gmail.com',
-          recipientEmail: oldEmail,
-          subject: 'Security Alert! Email Changed',
-          message: message,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+
+    if (!!message) {
+      await this.sendEmail({
+        entity_id: entity_id,
+        recipientEmail: oldEmail,
+        subject: 'Security Alert! Email Changed',
+        message: message,
+      });
     }
   }
 }
