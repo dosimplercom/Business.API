@@ -6,7 +6,7 @@ import rateLimit from 'express-rate-limit';
 export class RateLimiterMiddleware implements NestMiddleware {
   private limiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minutes
-    max: 10,
+    max: process.env.MAX_REQUESTS_PER_MINUTE ? parseInt(process.env.MAX_REQUESTS_PER_MINUTE, 10) : 100, 
     handler: (req, res: any) => {
       console.error(
         `Rate Limiter Middleware. Too many requests: ${req.method} ${req.originalUrl} from IP: ${req.ip}`,

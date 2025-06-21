@@ -2,7 +2,7 @@ import { Body, Controller, Get, Put, Req, UseGuards } from '@nestjs/common';
 import { AccountService } from '../account.service';
 import { Request } from 'express';
 import { KeyValueDto } from '../dto/account.dto';
-import { AuthenticatedGuard } from 'src/guards/jwt-auth.guard';
+import { AuthenticatedGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('api/account-preference')

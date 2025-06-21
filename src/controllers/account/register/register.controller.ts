@@ -11,7 +11,7 @@ import {
 import { Request, Response } from 'express';
 
 import { RegisterOwnerStaffDto, VerifyEmailCodeDto } from '../dto/account.dto';
-import { LightAuthenticatedGuard } from 'src/guards/light-auth.guard';
+import { LightAuthenticatedGuard } from 'src/shared/guards/light-auth.guard';
 import { AccountService } from '../account.service';
 import { Public } from 'src/shared/decorators/public.decorator';
 

@@ -15,13 +15,15 @@ import {
   I18nModule,
 } from 'nestjs-i18n';
 import * as path from 'path';
-import { GlobalExceptionFilter } from './filters/http-exception.filter';
-import { RateLimiterMiddleware } from './middleware/rate-limiter.middleware';
+import { GlobalExceptionFilter } from './shared/filters/http-exception.filter';
+import { RateLimiterMiddleware } from './shared/middleware/rate-limiter.middleware';
 import { EmailSenderModule } from './shared/modules/email-sender/email-sender.module';
+import { AppointmentModule } from './controllers/appointment/appointment.module';
 const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
+    AppointmentModule,
     EmailSenderModule,
     AccountModule,
     TranslationModule,

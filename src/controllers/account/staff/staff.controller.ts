@@ -14,7 +14,7 @@ import {
 import { Request } from 'express';
 
 import { RegisterBusinessStaffDto, UpdateStaffDto } from '../dto/account.dto';
-import { AuthenticatedGuard } from 'src/guards/jwt-auth.guard';
+import { AuthenticatedGuard } from 'src/shared/guards/jwt-auth.guard';
 import { AccountService } from '../account.service';
 
 @UseGuards(AuthenticatedGuard)

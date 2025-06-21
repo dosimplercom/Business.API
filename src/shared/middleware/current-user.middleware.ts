@@ -1,17 +1,18 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { UsersService } from '../users.service';
+import { UsersService } from '../../users/users.service';
 
+export interface CurrentUser {
+  id: number;
+  full_name: string;
+  email: string;
+  refresh: string;
+  business_id?: number;
+}
 declare global {
   namespace Express {
     interface Request {
-      currentUser?: {
-        id: number;
-        full_name: string;
-        email: string;
-        refresh: string;
-        business_id?: number;
-      };
+      currentUser?: CurrentUser;
     }
   }
 }

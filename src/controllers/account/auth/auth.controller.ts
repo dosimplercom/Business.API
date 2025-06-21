@@ -18,8 +18,8 @@ import {
   ResetPasswordDto,
   ForgotPasswordDto,
 } from '../dto/account.dto';
-import { LightAuthenticatedGuard } from 'src/guards/light-auth.guard';
-import { RefreshAuthenticatedGuard } from 'src/guards/refresh-auth.guard';
+import { LightAuthenticatedGuard } from 'src/shared/guards/light-auth.guard';
+import { RefreshAuthenticatedGuard } from 'src/shared/guards/refresh-auth.guard';
 import { AccountService } from '../account.service';
 
 @Controller('api/auth')

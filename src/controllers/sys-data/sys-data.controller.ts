@@ -1,18 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { SysDataService } from './sys-data.service';
 import { BaseController } from 'src/shared/base/base.controller';
-import { TranslationService } from 'src/i18n/translation.service';
+import { LightAuthenticatedGuard } from 'src/shared/guards/light-auth.guard';
 
-@Controller('sys')
+@UseGuards(LightAuthenticatedGuard)
+@Controller('api/sys')
 export class SysDataController extends BaseController {
-  constructor(
-    private service: SysDataService,
-    private readonly translationService: TranslationService,
-  ) {
+  constructor(private service: SysDataService) {
     super();
   }
   @Get('days')
-  async getSysData() {
+  async getDays() {
     return await this.service.getDays();
   }
   @Get('industries')
@@ -23,9 +21,20 @@ export class SysDataController extends BaseController {
   async getTimezones() {
     return await this.service.getTimezones();
   }
-
-  @Get('hello')
-  greet() {
-    return this.translationService.t('resources.general.welcome');
+  @Get('countries')
+  async getCountries() {
+    return await this.service.getCountries();
+  }
+  @Get(':country_id/state')
+  async getStatesByCountry(@Query('country_id') country_id: string) {
+    return await this.service.getStatesByCountry(+country_id);
+  }
+  @Get('languages')
+  async getLanguages() {
+    return await this.service.getLanguages();
+  }
+  @Get('appointment-status')
+  async getAppointmentStatuses() {
+    return await this.service.getAppointmentStatuses();
   }
 }

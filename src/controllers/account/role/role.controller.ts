@@ -1,7 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
-import { AuthenticatedGuard } from 'src/guards/jwt-auth.guard';
+import { AuthenticatedGuard } from 'src/shared/guards/jwt-auth.guard';
 import { RoleService } from './role.service';
 
 @UseGuards(AuthenticatedGuard)

@@ -18,7 +18,13 @@ export class AccountRepository {
     @InjectRepository(UserAuth)
     private readonly userAuthRepo: Repository<UserAuth>,
   ) {}
-  async getById(entity_id: number) {
+  /** Validates the caller by checking if the user exists in the business.
+   * Throws an error if the user does not exist.
+   * @param entity_id - User ID
+   * @param business_id - Business ID, Optional, If provided, checks if the user belongs to the business.
+   * @return UserAuth
+   */
+  async getById(entity_id: number, business_id: number | null = null) {
     const user_auth = await this.userAuthRepo.findOne({
       where: { entity_id },
       relations: ['entity'],
@@ -27,7 +33,9 @@ export class AccountRepository {
     if (!user_auth) {
       throw new BadRequestException('resources.account.not_found');
     }
-
+    if (business_id && user_auth.entity.business_id !== business_id) {
+      throw new BadRequestException('resources.account.not_found');
+    }
     return user_auth;
   }
   async getByEmail(email: string, throwException = true) {

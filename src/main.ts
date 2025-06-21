@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { corsOptions } from './config/cors.config';
+import { corsOptions } from './shared/config/cors.config';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 

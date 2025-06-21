@@ -12,7 +12,7 @@ import {
   SearchCustomersDto,
 } from '../dto/account.dto';
 import { AccountService } from '../account.service';
-import { AuthenticatedGuard } from 'src/guards/jwt-auth.guard';
+import { AuthenticatedGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('api/customer')
