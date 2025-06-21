@@ -7,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './controllers/app.controller';
 import { UsersModule } from './users/users.module';
-import { ReportsModule } from './reports/reports.module';
 import { AppDataSource } from 'typeorm.config';
 import {
   AcceptLanguageResolver,
@@ -52,7 +51,6 @@ const cookieSession = require('cookie-session');
       ],
     }),
     UsersModule,
-    ReportsModule,
     SysDataModule,
   ],
   exports: [TranslationModule],
