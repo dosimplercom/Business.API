@@ -19,6 +19,8 @@ import { RateLimiterMiddleware } from './shared/middleware/rate-limiter.middlewa
 import { EmailSenderModule } from './shared/modules/email-sender/email-sender.module';
 import { AppointmentModule } from './controllers/appointment/appointment.module';
 import { CalendarModule } from './controllers/calendar/calendar.module';
+import { BusinessModule } from './controllers/business/business.module';
+import { ClassModule } from './controllers/configuration/class/class.module';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -26,7 +28,9 @@ const cookieSession = require('cookie-session');
     AccountModule,
     AppointmentModule,
     BookedClassModule,
+    BusinessModule,
     CalendarModule,
+    ClassModule,
     EmailSenderModule,
     SysDataModule,
     TranslationModule,

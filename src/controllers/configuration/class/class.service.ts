@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ClassRepository } from './class.repository';
 import { ClassManipulationDto } from './dto/class.dto';
-import { BusinessRepository } from 'src/controllers/business/business.repository';
+import { BusinessRepository } from 'src/controllers/business/core/business.repository';
 
 @Injectable()
 export class ClassService {

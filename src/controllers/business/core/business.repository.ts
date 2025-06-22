@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { BusinessCreateDto } from './dto/business.dto';
+import { BusinessCreateDto } from '../dto/business.dto';
 import { Business } from 'src/entities/business.entity';
 
 @Injectable()

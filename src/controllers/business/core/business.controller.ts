@@ -8,12 +8,12 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthenticatedGuard } from '../../shared/guards/jwt-auth.guard';
+import { AuthenticatedGuard } from '../../../shared/guards/jwt-auth.guard';
 import {
   AppointmentApprovalPayloadDto,
   BusinessCreateDto,
   SupportedLanguagesPayloadDto,
-} from './dto/business.dto';
+} from '../dto/business.dto';
 import { Request, Response } from 'express';
 import { LightAuthenticatedGuard } from 'src/shared/guards/light-auth.guard';
 import { BusinessService } from './business.service';

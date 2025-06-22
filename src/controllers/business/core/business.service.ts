@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { AccountRepository } from '../account/account.repository';
+import { AccountRepository } from '../../account/account.repository';
 
 import { Response } from 'express';
 import { BusinessRepository } from './business.repository';
@@ -7,8 +7,8 @@ import {
   AppointmentApprovalPayloadDto,
   BusinessCreateDto,
   SupportedLanguagesPayloadDto,
-} from './dto/business.dto';
-import { AuthService } from '../account/auth/auth.service';
+} from '../dto/business.dto';
+import { AuthService } from '../../account/auth/auth.service';
 
 @Injectable()
 export class BusinessService {
