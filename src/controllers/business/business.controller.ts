@@ -23,7 +23,7 @@ export class BusinessController {
   constructor(private readonly businessService: BusinessService) {}
 
   @UseGuards(LightAuthenticatedGuard)
-  @Post()
+  @Post('create')
   async register(
     @Body() dto: BusinessCreateDto,
     @Req() req: Request,
@@ -33,7 +33,7 @@ export class BusinessController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Get()
+  @Get('get')
   async getBusiness(@Req() req: Request) {
     return this.businessService.get(req.currentUser.business_id);
   }
