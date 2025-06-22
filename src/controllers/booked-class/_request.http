@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:3000/api/
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImlhdCI6MTc1MDM4MDM3NiwiZXhwIjoxNzUwNTUzMTc2fQ.8B9nSsvwItXqgf6qD6mr85hFNhTaNte_y2Y0_Zc0qvY
+@cookie = refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDUyMTgzMSwiZXhwIjoxNzUxMTI2NjMxfQ.y8_U6cUQQuAjlfw9VJkv9XzT7vV6h9axSUJzbooRkq0; Max-Age=604800; Path=/; Expires=Sat, 28 Jun 2025 16:03:51 GMT; HttpOnly; Secure,XSRF-TOKEN=ed6da89e2914eccc3e1b45bbe54c2a483582c0cdad724c3867fc64b1d86ebdc4; Path=/; Secure
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImZ1bGxfbmFtZSI6Ikd1cmdlbiBDaGxpbmdhcnlhbiIsImVtYWlsIjoiY2hsaW5nYXJpYW4uZ0BnbWFpbC5jb20iLCJyZWZyZXNoIjp0cnVlLCJidXNpbmVzc19pZCI6NTAsImlhdCI6MTc1MDUyMTgzMSwiZXhwIjoxNzUwNjk0NjMxfQ.HmCTj54xYkX1MOEIf1a9kRAHZ2B2JKqSm5jRMKJWmFk
+
+
+###
+GET {{baseUrl}}booked-class/15/get
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Set-Cookie: {{cookie}}
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: {{token}}
+
+
+###
+PUT {{baseUrl}}booked-class/15/update
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Set-Cookie: {{cookie}}
+Content-Type: application/json; charset=utf-8
+Authorization: Bearer: {{token}}
+
+{
+    "staff_id": 12
+}
+ 

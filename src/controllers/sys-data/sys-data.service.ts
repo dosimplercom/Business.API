@@ -15,11 +15,10 @@ export class SysDataService {
   private async getSysData(sys_data: sys_data_type_enum) {
     try {
       const sql = 'SELECT id, name FROM public.get_data_for_ddl($1, $2)';
-      const res = await this.dataSource.query(sql, [
+      return await this.dataSource.query(sql, [
         sys_data,
         this.translationService.language,
       ]);
-      return res.get_data_for_ddl;
     } catch (error) {
       console.error(`Error fetching sys data ${sys_data}:`, error);
       return new UnprocessableEntityException(

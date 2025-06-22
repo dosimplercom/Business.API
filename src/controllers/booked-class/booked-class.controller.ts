@@ -23,11 +23,11 @@ export class BookedClassController {
   constructor(private readonly bookedClassService: BookedClassService) {}
   @Post('create')
   create(@Body() payload: BookedClassPayloadDto, @Req() req) {
-    return this.bookedClassService.create(payload, req.user);
+    return this.bookedClassService.create(payload, req.currentUser);
   }
   @Get(':id/get')
   get(@Param('id') id: number, @Req() req) {
-    return this.bookedClassService.get(id, req.user.business_id);
+    return this.bookedClassService.get(id, req.currentUser.business_id);
   }
 
   @Put(':id/update')
@@ -36,12 +36,12 @@ export class BookedClassController {
     @Body() payload: BookedClassPayloadDto,
     @Req() req,
   ) {
-    return this.bookedClassService.update(id, payload, req.user);
+    return this.bookedClassService.update(id, payload, req.currentUser);
   }
 
   @Delete(':id/delete')
   delete(@Param('id') id: number, @Req() req) {
-    return this.bookedClassService.delete(id, req.user.business_id);
+    return this.bookedClassService.delete(id, req.currentUser.business_id);
   }
 
   @Post(':id/reschedule')
@@ -53,12 +53,12 @@ export class BookedClassController {
     return this.bookedClassService.reschedule(
       id,
       payload,
-      req.user.business_id,
+      req.currentUser.business_id,
     );
   }
 
   @Post('change-status')
   changeStatus(@Body() body: ChangeEventStatusDto, @Req() req) {
-    return this.bookedClassService.changeStatus(body, req.user);
+    return this.bookedClassService.changeStatus(body, req.currentUser);
   }
 }
