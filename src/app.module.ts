@@ -18,6 +18,7 @@ import { GlobalExceptionFilter } from './shared/filters/http-exception.filter';
 import { RateLimiterMiddleware } from './shared/middleware/rate-limiter.middleware';
 import { EmailSenderModule } from './shared/modules/email-sender/email-sender.module';
 import { AppointmentModule } from './controllers/appointment/appointment.module';
+import { CalendarModule } from './controllers/calendar/calendar.module';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -25,6 +26,7 @@ const cookieSession = require('cookie-session');
     AccountModule,
     AppointmentModule,
     BookedClassModule,
+    CalendarModule,
     EmailSenderModule,
     SysDataModule,
     TranslationModule,
