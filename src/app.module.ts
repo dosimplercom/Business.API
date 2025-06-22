@@ -1,3 +1,4 @@
+import { BookedClassModule } from './controllers/booked-class/booked-class.module';
 import { AccountModule } from './controllers/account/account.module';
 import { TranslationModule } from './i18n/translation.module';
 import { SysDataModule } from './controllers/sys-data/sys-data.module';
@@ -6,7 +7,6 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './controllers/app.controller';
-import { UsersModule } from './users/users.module';
 import { AppDataSource } from 'typeorm.config';
 import {
   AcceptLanguageResolver,
@@ -22,9 +22,11 @@ const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
-    AppointmentModule,
-    EmailSenderModule,
     AccountModule,
+    AppointmentModule,
+    BookedClassModule,
+    EmailSenderModule,
+    SysDataModule,
     TranslationModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -50,8 +52,6 @@ const cookieSession = require('cookie-session');
         //new HeaderResolver(['Accept-Language']),
       ],
     }),
-    UsersModule,
-    SysDataModule,
   ],
   exports: [TranslationModule],
   controllers: [AppController],

@@ -21,7 +21,7 @@ import {
 import { AuthenticatedGuard } from 'src/shared/guards/jwt-auth.guard';
 
 @UseGuards(AuthenticatedGuard)
-@Controller('api/appointments')
+@Controller('api/appointment')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
