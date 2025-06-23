@@ -12,7 +12,11 @@ export class BusinessRepository {
   ) {}
 
   async getById(id: number) {
-    return this.bizRepo.findOne({ where: { id } });
+    const res = await this.bizRepo.findOne({ where: { id } });
+    if (!res) {
+      throw new BadRequestException('resources.status.not_found');
+    }
+    return res;
   }
 
   async addBusiness(data: BusinessCreateDto) {
@@ -48,9 +52,7 @@ export class BusinessRepository {
 
   async setAppointmentApproval(business_id: number, requires: boolean) {
     const biz = await this.getById(business_id);
-    if (!biz) {
-      throw new BadRequestException('resources.status.not_found');
-    }
+
     biz.appointment_requires_approval = requires;
     return this.bizRepo.save(biz);
   }
