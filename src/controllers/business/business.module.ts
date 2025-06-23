@@ -9,9 +9,13 @@ import { WorkingHoursController } from './working-hours/working-hours.controller
 import { BusinessCalendarColorsController } from './calendar-colors/business-calendar-colors.controller';
 import { BusinessCalendarColorsService } from './calendar-colors/business-calendar-colors.service';
 import { BusinessCalendarColorsRepository } from './calendar-colors/business-calendar-colors.repository';
+import { BusinessCalendarColors } from 'src/entities/business-calendar-colors.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Business]), AccountModule],
+  imports: [
+    TypeOrmModule.forFeature([Business, BusinessCalendarColors]),
+    AccountModule,
+  ],
   controllers: [
     BusinessCalendarColorsController,
     BusinessController,
