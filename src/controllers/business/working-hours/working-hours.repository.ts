@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BusinessWorkingHour } from 'src/entities/business-working-hour.entity';
 import { Repository, DataSource } from 'typeorm';
-import { BusinessWorkingHoursCreationPayloadDTO, BusinessWorkingHoursPayloadDTO } from './dto/business-workinghours.dto';
+import { BusinessWorkingHoursPayloadDTO } from './dto/business-workinghours.dto';
 
 @Injectable()
 export class BusinessWorkingHoursRepository {
@@ -12,7 +12,7 @@ export class BusinessWorkingHoursRepository {
     private readonly dataSource: DataSource,
   ) {}
 
-  async add(business_id: number, data: BusinessWorkingHoursCreationPayloadDTO) {
+  async add(business_id: number, data: BusinessWorkingHoursPayloadDTO ) {
     const newWH = this.repo.create({
       ...data,
       business_id: business_id,
