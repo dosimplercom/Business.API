@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BusinessWorkingHoursRepository } from './working-hours.repository';
-import {
-  BusinessWorkingHoursCreationPayloadDTO,
-  BusinessWorkingHoursPayloadDTO,
-} from './dto/business-workinghours.dto';
+import { BusinessWorkingHoursPayloadDTO } from './dto/business-workinghours.dto';
 
 @Injectable()
 export class BusinessWorkingHoursService {
   constructor(private readonly repo: BusinessWorkingHoursRepository) {}
 
-  async add(business_id: number, dto: BusinessWorkingHoursCreationPayloadDTO) {
+  async add(business_id: number, dto: BusinessWorkingHoursPayloadDTO) {
     return await this.repo.add(business_id, dto);
   }
 
