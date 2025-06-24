@@ -13,10 +13,7 @@ import {
 import { AuthenticatedGuard } from 'src/shared/guards/jwt-auth.guard';
 import { BusinessWorkingHoursService } from './business-workinghours.service';
 import { Request } from 'express';
-import {
-  BusinessWorkingHoursCreationPayloadDTO,
-  BusinessWorkingHoursPayloadDTO,
-} from './dto/business-workinghours.dto';
+import { BusinessWorkingHoursPayloadDTO } from './dto/business-workinghours.dto';
 
 @Controller('api/business/working-hours')
 @UseGuards(AuthenticatedGuard)
@@ -24,10 +21,7 @@ export class BusinessWorkingHoursController {
   constructor(private readonly service: BusinessWorkingHoursService) {}
 
   @Post('add')
-  async add(
-    @Req() req: Request,
-    @Body() dto: BusinessWorkingHoursCreationPayloadDTO,
-  ) {
+  async add(@Req() req: Request, @Body() dto: BusinessWorkingHoursPayloadDTO) {
     return this.service.add(req.currentUser.business_id, dto);
   }
 
