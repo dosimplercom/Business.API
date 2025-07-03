@@ -1,3 +1,4 @@
+import { ServiceModule } from './controllers/configuration/service/service.module';
 import { BookedClassModule } from './controllers/booked-class/booked-class.module';
 import { AccountModule } from './controllers/account/account.module';
 import { TranslationModule } from './i18n/translation.module';
@@ -32,6 +33,7 @@ const cookieSession = require('cookie-session');
     CalendarModule,
     ClassModule,
     EmailSenderModule,
+    ServiceModule,
     SysDataModule,
     TranslationModule,
     ConfigModule.forRoot({

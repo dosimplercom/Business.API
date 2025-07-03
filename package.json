@@ -28,6 +28,7 @@
     "@nestjs/common": "^11.1.2",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.2",
+    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^11.1.2",
     "@nestjs/typeorm": "^11.0.0",
     "@types/cookie-session": "^2.0.42",

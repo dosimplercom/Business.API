@@ -3,7 +3,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { DataSource } from 'typeorm';
 import { EmailTokenRepository } from './email-token.repository';
-import { SendEmailBodyDTO } from './email-body.model';
+import { ICSFileDto, SendEmailBodyDTO } from './email-body.model';
 
 @Injectable()
 export class EmailSenderService {
@@ -28,6 +28,10 @@ export class EmailSenderService {
   private async sendEmail(body: SendEmailBodyDTO): Promise<void> {
     const authToken = await this.getAuthToken();
 
+    let icsContent = '';
+    if (body?.icsData) {
+      icsContent = this.createIcsString(body.icsData);
+    }
     try {
       await axios.post(
         'https://notify-api.dosimpler.com/api/notifications/sendemail',
@@ -38,6 +42,16 @@ export class EmailSenderService {
           recipientEmail: body.recipientEmail,
           subject: body.subject,
           message: body.message,
+          attachments: !!icsContent
+            ? [
+                {
+                  content: Buffer.from(icsContent).toString('base64'),
+                  filename: 'event.ics',
+                  type: 'text/calendar',
+                  disposition: 'attachment',
+                },
+              ]
+            : [],
         },
         {
           headers: {
@@ -52,6 +66,21 @@ export class EmailSenderService {
       throw new HttpException(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
     }
   }
+  private createIcsString(icsData: ICSFileDto): string {
+    return `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//app.DoSimpler.com//NONSGML v1.0//EN
+BEGIN:VEVENT
+UID:app@dosimpler.com
+SUMMARY:${icsData.eventTitle}
+DTSTAMP:${icsData.stampDate}
+DTSTART:${icsData.startDate}
+DTEND:${icsData.endDate}
+LOCATION:${icsData.location}
+DESCRIPTION:${icsData.description}
+END:VEVENT
+END:VCALENDAR`;
+  }
 
   async sendAccountAddedEmail(entityId: number, email: string): Promise<void> {
     await this.sendEmail({
@@ -61,6 +90,7 @@ export class EmailSenderService {
       message: `You were invited to join the Team on https://app.dosimpler.com 
       // Should we send single use link to set the password ? 
       // What is the workflow? `,
+      icsData: null,
     });
   }
 
@@ -93,6 +123,7 @@ export class EmailSenderService {
         recipientEmail: email,
         subject: 'Email Verification',
         message: `Your verification code is ${latestToken.token}`,
+        icsData: null,
       });
     }
   }
@@ -117,7 +148,12 @@ export class EmailSenderService {
         recipientEmail: oldEmail,
         subject: 'Security Alert! Email Changed',
         message: message,
+        icsData: null,
       });
     }
+  }
+
+  async sendEmailWithICS(body: SendEmailBodyDTO) {
+    await this.sendEmail(body);
   }
 }
