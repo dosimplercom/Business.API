@@ -1,7 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { AccountService } from '../../../account/account.service';
 import { AccountRepository } from 'src/controllers/account/account.repository';
 
 @Injectable()
