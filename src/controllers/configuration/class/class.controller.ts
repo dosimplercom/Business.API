@@ -13,14 +13,14 @@ import { ClassService } from './class.service';
 
 import { Request } from 'express';
 import { AuthenticatedGuard } from 'src/shared/guards/jwt-auth.guard';
-import { ClassManipulationDto } from './dto/class.dto';
+import { ClassManipulationPayloadDto } from './dto/class.dto';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('api/class')
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
 
-  @Get('all')
+  @Get('get-all')
   async getAll(@Req() req: Request) {
     const business_id = req.currentUser?.business_id;
     return this.classService.getAll(business_id);
@@ -33,7 +33,7 @@ export class ClassController {
   }
 
   @Post('create')
-  async add(@Body() dto: ClassManipulationDto, @Req() req: Request) {
+  async add(@Body() dto: ClassManipulationPayloadDto, @Req() req: Request) {
     const business_id = req.currentUser?.business_id;
     return this.classService.add(dto, business_id);
   }
@@ -41,7 +41,7 @@ export class ClassController {
   @Put(':class_id/update')
   async update(
     @Param('class_id') class_id: number,
-    @Body() dto: ClassManipulationDto,
+    @Body() dto: ClassManipulationPayloadDto,
     @Req() req: Request,
   ) {
     const business_id = req.currentUser?.business_id;

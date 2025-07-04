@@ -3,11 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Service } from '../../../entities/service.entity';
 import { BusinessService } from '../../business/core/business.service';
-import { CreateServiceDto, UpdateServiceDto } from './dto/service.dto';
+import {
+  CreateServiceDto,
+  ServiceDto,
+  UpdateServiceDto,
+} from './dto/service.dto';
 import { AccountRepository } from 'src/controllers/account/account.repository';
 import { EmailSenderService } from 'src/shared/modules/email-sender/email-sender.service';
 import { DateTime } from 'luxon';
 import { roundMinTo5 } from 'src/shared/methods';
+import { plainToInstance } from 'class-transformer';
 @Injectable()
 export class ServiceService {
   constructor(
@@ -34,11 +39,15 @@ export class ServiceService {
 
   async getAll(business_id: number) {
     await this.validateBusiness(business_id);
-    return this.serviceRepo.find({ where: { business_id, deleted: false } });
+    const services = await this.serviceRepo.find({
+      where: { business_id, deleted: false },
+    });
+    return plainToInstance(ServiceDto, services);
   }
 
   async getOne(id: number, business_id: number) {
-    return this.validateService(id, business_id);
+    const service = await this.validateService(id, business_id);
+    return plainToInstance(ServiceDto, service);
   }
 
   async add(dto: CreateServiceDto, business_id: number) {
@@ -53,7 +62,8 @@ export class ServiceService {
       business_id,
       deleted: false,
     });
-    return this.serviceRepo.save(service);
+    const savedService = await this.serviceRepo.save(service);
+    return plainToInstance(ServiceDto, savedService);
   }
 
   async update(id: number, dto: UpdateServiceDto, business_id: number) {
@@ -66,7 +76,8 @@ export class ServiceService {
         dto.default_buffer_time_in_minutes,
       ),
     });
-    return this.serviceRepo.save(service);
+    const savedService = await this.serviceRepo.save(service);
+    return plainToInstance(ServiceDto, savedService);
   }
 
   async delete(id: number, business_id: number) {

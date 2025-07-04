@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { ClassCreationDto, ClassManipulationDto, ClassUpdateDto } from './dto/class.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ClassManipulationPayloadDto } from './dto/class.dto';
+import { ClassEntity } from 'src/entities/class.entity';
 
 function roundMinTo5(minutes: number) {
   if (minutes % 5 > 0) {
@@ -12,90 +13,69 @@ function roundMinTo5(minutes: number) {
 
 @Injectable()
 export class ClassRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(ClassEntity)
+    private readonly classRepo: Repository<ClassEntity>,
+  ) {}
 
   async getAllClasses(business_id: number) {
-    const query = `SELECT * FROM class WHERE business_id = $1 AND deleted = false`;
-    const result = await this.dataSource.query(query, [business_id]);
-    return result.rows;
+    return this.classRepo.find({
+      where: { business_id, deleted: false },
+    });
   }
 
-  async getById(id: number, business_id: number)  {
-    const query = `SELECT * FROM class WHERE id = $1 AND business_id = $2`;
-    const result = await this.dataSource.query(query, [id, business_id]);
-    return result.rows;
+  async getById(id: number, business_id: number) {
+    const cls = await this.classRepo.findOne({
+      where: { id, business_id, deleted: false },
+    });
+    if (!cls) {
+      throw new BadRequestException('resources.status.not_found');
+    }
+    return cls;
   }
 
-  async add(data: ClassManipulationDto, business_id: number)  {
-    const dData: ClassCreationDto = {
+  async add(data: ClassManipulationPayloadDto, business_id: number) {
+    const cls = this.classRepo.create({
       business_id,
       name: data.name,
       description: data.description,
-      default_duration_in_minutes: roundMinTo5(data.default_duration_in_minutes),
-      default_buffer_time_in_minutes: roundMinTo5(data.default_buffer_time_in_minutes),
+      default_duration_in_minutes: roundMinTo5(
+        data.default_duration_in_minutes,
+      ),
+      default_buffer_time_in_minutes: roundMinTo5(
+        data.default_buffer_time_in_minutes,
+      ),
       default_cost: data.default_cost,
       capacity: data.capacity,
       available_for_online_booking: data.available_for_online_booking,
-    };
-    // Assuming you have a helper insert function on your db connection
-    const result = await this.dataSource.query(
-      `INSERT INTO class (business_id, name, description, default_duration_in_minutes, default_buffer_time_in_minutes, default_cost, capacity, available_for_online_booking)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-      [
-        dData.business_id,
-        dData.name,
-        dData.description,
-        dData.default_duration_in_minutes,
-        dData.default_buffer_time_in_minutes,
-        dData.default_cost,
-        dData.capacity,
-        dData.available_for_online_booking,
-      ],
-    );
-    return result.rows[0];
+      deleted: false,
+    });
+    return this.classRepo.save(cls);
   }
 
-  async update(id: number, data: ClassManipulationDto)  {
-    const dData: ClassUpdateDto = {
-      name: data.name,
-      description: data.description,
-      default_duration_in_minutes: roundMinTo5(data.default_duration_in_minutes),
-      default_buffer_time_in_minutes: roundMinTo5(data.default_buffer_time_in_minutes),
-      default_cost: data.default_cost,
-      capacity: data.capacity,
-      available_for_online_booking: data.available_for_online_booking,
-    };
+  async update(
+    id: number,
+    business_id: number,
+    data: ClassManipulationPayloadDto,
+  ) {
+    const cls = await this.getById(id, business_id);
 
-    const result = await this.dataSource.query(
-      `UPDATE class SET
-        name = $1,
-        description = $2,
-        default_duration_in_minutes = $3,
-        default_buffer_time_in_minutes = $4,
-        default_cost = $5,
-        capacity = $6,
-        available_for_online_booking = $7
-      WHERE id = $8
-      RETURNING *`,
-      [
-        dData.name,
-        dData.description,
-        dData.default_duration_in_minutes,
-        dData.default_buffer_time_in_minutes,
-        dData.default_cost,
-        dData.capacity,
-        dData.available_for_online_booking,
-        id,
-      ],
-    );
+    Object.assign(cls, {
+      ...data,
+      default_duration_in_minutes: roundMinTo5(
+        data.default_duration_in_minutes,
+      ),
+      default_buffer_time_in_minutes: roundMinTo5(
+        data.default_buffer_time_in_minutes,
+      ),
+    });
 
-    return result.rowCount === 0 ? null : result.rows[0];
+    return this.classRepo.save(cls);
   }
 
   async delete(id: number, business_id: number): Promise<void> {
-    await this.dataSource.query(
-      `UPDATE class SET deleted = true WHERE id = $1 AND business_id = $2`,
-      [id, business_id],
-    );
+    const cls = await this.getById(id, business_id);
+    cls.deleted = true;
+    await this.classRepo.save(cls);
   }
 }

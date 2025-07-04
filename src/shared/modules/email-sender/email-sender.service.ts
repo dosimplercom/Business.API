@@ -63,7 +63,7 @@ export class EmailSenderService {
     } catch (error) {
       const errorMessage = `Failed to send an email with subject ${body.subject}`;
       console.error(errorMessage, error?.response?.data || error.message);
-      throw new HttpException(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
+      //throw new HttpException(errorMessage, HttpStatus.SERVICE_UNAVAILABLE);
     }
   }
   private createIcsString(icsData: ICSFileDto): string {

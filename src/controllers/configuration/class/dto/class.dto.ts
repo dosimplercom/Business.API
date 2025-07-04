@@ -1,6 +1,16 @@
-import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { ClassEntity } from 'src/entities/class.entity';
+import {
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Min,
+} from 'class-validator';
 
-export class ClassManipulationDto {
+export class ClassManipulationPayloadDto {
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -29,9 +39,36 @@ export class ClassManipulationDto {
   capacity: number;
 }
 
-export class ClassCreationDto extends ClassManipulationDto {
-  @IsInt()
-  business_id: number;
+export class ClassDto extends ClassEntity {
+  @Transform(({ value }) => (!!value ? parseFloat(value) : 0), {
+    toClassOnly: true,
+  })
+  default_cost: number;
 }
 
-export class ClassUpdateDto extends ClassManipulationDto {}
+// export class ClassDto {
+//   id: number;
+
+//   business_id: number;
+
+//   name: string;
+
+//   description?: string;
+
+//   default_duration_in_minutes: number;
+
+//   default_buffer_time_in_minutes: number;
+
+//   @Transform(({ value }) => parseFloat(value), { toClassOnly: true })
+//   default_cost: number;
+
+//   capacity: number;
+
+//   available_for_online_booking: boolean;
+
+//   created_at: Date;
+
+//   updated_at: Date | null;
+
+//   deleted: boolean;
+// }

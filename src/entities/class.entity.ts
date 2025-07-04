@@ -30,15 +30,18 @@ export class ClassEntity {
   default_buffer_time_in_minutes: number;
 
   @Column({ type: 'numeric', precision: 12, scale: 2, default: 0 })
-  default_cost: number; // numeric mapped to string for precision
+  default_cost: number;
 
-  @Column({ type: 'numeric', precision: 12, scale: 2, default: 1 })
+  @Column({ type: 'int', default: 1 })
   capacity: number;
 
   @Column({ default: false })
   available_for_online_booking: boolean;
 
-  @CreateDateColumn({ type: 'timestamp without time zone', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({
+    type: 'timestamp without time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   created_at: Date;
 
   @UpdateDateColumn({ type: 'timestamp without time zone', nullable: true })
@@ -51,6 +54,9 @@ export class ClassEntity {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
-  @JoinColumn({ name: 'business_id', foreignKeyConstraintName: 'class_business_id_fkey' })
+  @JoinColumn({
+    name: 'business_id',
+    foreignKeyConstraintName: 'class_business_id_fkey',
+  })
   business: Business;
 }

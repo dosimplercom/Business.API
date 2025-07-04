@@ -22,6 +22,7 @@ import { AppointmentModule } from './controllers/appointment/appointment.module'
 import { CalendarModule } from './controllers/calendar/calendar.module';
 import { BusinessModule } from './controllers/business/business.module';
 import { ClassModule } from './controllers/configuration/class/class.module';
+import { StaffServiceModule } from './controllers/configuration/staff/service/staff-service.module';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -34,6 +35,7 @@ const cookieSession = require('cookie-session');
     ClassModule,
     EmailSenderModule,
     ServiceModule,
+    StaffServiceModule,
     SysDataModule,
     TranslationModule,
     ConfigModule.forRoot({

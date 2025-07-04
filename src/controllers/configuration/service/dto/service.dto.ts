@@ -1,5 +1,15 @@
-import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
+import { Service } from 'src/entities/service.entity';
+import { Transform } from 'class-transformer';
 
 export class CreateServiceDto {
   @IsNotEmpty()
@@ -26,3 +36,10 @@ export class CreateServiceDto {
 }
 
 export class UpdateServiceDto extends PartialType(CreateServiceDto) {}
+
+export class ServiceDto extends Service {
+  @Transform(({ value }) => (!!value ? parseFloat(value) : 0), {
+    toClassOnly: true,
+  })
+  default_cost: number;
+}

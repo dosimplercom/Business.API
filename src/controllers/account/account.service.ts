@@ -72,15 +72,12 @@ export class AccountService {
         'resources.account.failed_create_account',
       );
     }
-    try {
-      await this.emailSenderService.sendVerificationCode(
-        newAccount.id,
-        data.email,
-        true,
-      );
-    } catch (error) {
-      console.error('Failed to send verification email:', error);
-    }
+
+    this.emailSenderService.sendVerificationCode(
+      newAccount.id,
+      data.email,
+      true,
+    );
 
     const token = this.authService.generatePreAuthToken(newAccount.id);
 
@@ -96,15 +93,11 @@ export class AccountService {
       throw new BadRequestException('resources.account.email_verified');
     }
 
-    try {
-      await this.emailSenderService.sendVerificationCode(
-        user_auth.entity_id,
-        user_auth.email,
-        true,
-      );
-    } catch (error) {
-      console.error('Failed to send verification email:', error);
-    }
+    this.emailSenderService.sendVerificationCode(
+      user_auth.entity_id,
+      user_auth.email,
+      true,
+    );
   }
   // tested
   async verifyEmailCode(
@@ -340,13 +333,11 @@ export class AccountService {
       throw new BadRequestException('resources.account.invalid_credentials');
     }
 
-    try {
-      this.emailSenderService.sendVerificationCode(
-        account.entity_id,
-        dto.email,
-        false,
-      );
-    } catch (error) {}
+    this.emailSenderService.sendVerificationCode(
+      account.entity_id,
+      dto.email,
+      false,
+    );
 
     const token = this.authService.generatePreAuthToken(account.entity_id);
     return { message: 'Login successful', token };
@@ -366,7 +357,7 @@ export class AccountService {
         token: null,
       };
     }
-    await this.emailSenderService.sendVerificationCode(
+    this.emailSenderService.sendVerificationCode(
       account.entity_id,
       account.email,
       false,
